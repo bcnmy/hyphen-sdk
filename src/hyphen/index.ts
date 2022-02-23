@@ -8,6 +8,7 @@ import { DepositManager, DepositManagerParams } from "../transaction/deposit";
 import { LiquidityPools, LiquidityPoolsParams } from "../liquidity-pools";
 import { log } from "../logs";
 import { TransferManager, TransferManagerParams } from "../transaction/transfer";
+import { LiquidityProvidersManager, LiquidityProvidersManagerParams } from "../liquidity-providers";
 
 const { RESPONSE_CODES } = require('./config');
 
@@ -17,6 +18,7 @@ class Hyphen {
     contracts: ContractManager;
     deposit: DepositManager;
     transfer: TransferManager;
+    liquidityProviders: LiquidityProvidersManager;
     liquidityPool: LiquidityPools;
     environment: string;
     options: Options;
@@ -59,6 +61,12 @@ class Hyphen {
             environment: options.environment
         }
         this.deposit = new DepositManager(depositManagerParams);
+
+        // LiquidityProviders Manager Initialisation
+        const liquidityProvidersManagerParams: LiquidityProvidersManagerParams = {
+            provider: this.provider,
+        }
+        this.liquidityProviders = new LiquidityProvidersManager(liquidityProvidersManagerParams);
 
         // LiquidiyPools Initialisation
         const liquidityPoolManagerParams: LiquidityPoolsParams = {

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Hyphen SDK to enable instant and seamless cross-chain deposits & withdrawals",
   "main": "dist/hyphen/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/hyphen/index.d.ts",
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -28,8 +28,9 @@
   "homepage": "https://github.com/bcnmy/hyphen-sdk#readme",
   "files": [
     "*.js",
-    "/dist/meta-transaction/*.js",
-    "/dist/*.js"
+    "/dist/**/*.js",
+    "/dist/*.js",
+    "/dist/**/*.d.ts"
   ],
   "dependencies": {
     "@biconomy/mexa": "^2.0.24",

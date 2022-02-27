@@ -1,4 +1,4 @@
-const { config } = require('./config');
+const { config } = require('../../config');
 
 export type RESTAPI_PARAMS = {
     method: RequestMethod,
@@ -32,7 +32,7 @@ export function restAPI(params: RESTAPI_PARAMS): Promise<any | void> {
     return new Promise(async (resolve, reject) => {
         const fetchOptions: FetchOption = getFetchOptions(params.method);
         if(params.method === RequestMethod.POST) {
-            fetchOptions.body = params.body;
+            fetchOptions.body = JSON.stringify(params.body);
         }
         const queryParamsArray = [];
         let queryParamString = "";

@@ -1,4 +1,4 @@
-import { SIGNATURE_TYPES } from "../config";
+import { SIGNATURE_TYPES, RESPONSE_CODES } from "../config";
 import { Options, SupportedToken } from "../types";
 import { BiconomyProviderParams } from "../providers";
 import { BiconomyProvider } from "../providers/biconomy";
@@ -9,13 +9,11 @@ import { LiquidityPools, LiquidityPoolsParams } from "../liquidity-pools";
 import { log } from "../logs";
 import { TransferManager, TransferManagerParams } from "../transaction/transfer";
 
-const { RESPONSE_CODES } = require('./config');
-
 class Hyphen {
     provider: BiconomyProvider;
     tokens: TokenManager;
     contracts: ContractManager;
-    deposit: DepositManager;
+    depositManager: DepositManager;
     transfer: TransferManager;
     liquidityPool: LiquidityPools;
     environment: string;
@@ -58,7 +56,7 @@ class Hyphen {
             transferCheckInterval: options.transferCheckInterval,
             environment: options.environment
         }
-        this.deposit = new DepositManager(depositManagerParams);
+        this.depositManager = new DepositManager(depositManagerParams);
 
         // LiquidiyPools Initialisation
         const liquidityPoolManagerParams: LiquidityPoolsParams = {

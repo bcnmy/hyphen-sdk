@@ -20,7 +20,8 @@ export type DepositRequest = {
     amount: string,
     fromChainId: string,
     toChainId: string,
-    useBiconomy: boolean
+    useBiconomy: boolean,
+    tag: string
 }
 
 export type DepositManagerParams = {
@@ -82,12 +83,12 @@ export class DepositManager extends TransactionManager {
             let txData;
             let value = '0x0';
             if (isNativeAddress(request.tokenAddress)) {
-                const { data } = await lpManager.populateTransaction.depositNative(request.receiver, request.toChainId);
+                const { data } = await lpManager.populateTransaction.depositNative(request.receiver, request.toChainId, request.tag);
                 txData = data;
                 value = ethers.utils.hexValue(ethers.BigNumber.from(request.amount));
             } else {
-                const { data } = await lpManager.populateTransaction.depositErc20(request.tokenAddress, request.receiver,
-                    request.amount, request.toChainId);
+                const { data } = await lpManager.populateTransaction.depositErc20(request.toChainId, request.tokenAddress, request.receiver,
+                    request.amount, request.tag);
                 txData = data;
             }
 

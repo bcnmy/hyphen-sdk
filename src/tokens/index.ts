@@ -126,7 +126,7 @@ export class TokenManager extends ContractManager {
             }
 
             const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, provider);
-            const tokenContractInterface = new ethers.utils.Interface(erc20ABI.toString());
+            const tokenContractInterface = new ethers.utils.Interface(JSON.stringify(erc20ABI));
             const tokenInfo = config.tokenAddressMap[tokenAddress.toLowerCase()] ? config.tokenAddressMap[tokenAddress.toLowerCase()][currentNetwork.chainId] : undefined;
             if (tokenContract) {
                 if((infiniteApproval !== undefined && infiniteApproval) || (infiniteApproval === undefined && this.infiniteApproval)) {

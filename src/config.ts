@@ -321,8 +321,8 @@ defaultSupportedTokens.set(
 
 const config: Config = {
 	hyphenBaseUrl: {
-		"test": "http://localhost:3000",
-		"staging": "https://hyphen-staging-api.biconomy.io",
+		"test": "https://hyphen-v2-integration-api.biconomy.io",
+		"staging": "https://hyphen-v2-staging-api.biconomy.io",
 		"prod": "https://hyphen-api.biconomy.io"
 	},
 	initiateExitPath: "/api/v1/insta-exit/initiate-exit",

@@ -1,4 +1,4 @@
-import { SIGNATURE_TYPES, RESPONSE_CODES } from "../config";
+import { SIGNATURE_TYPES, RESPONSE_CODES, EXIT_STATUS } from "../config";
 import { Options, SupportedToken } from "../types";
 import { BiconomyProviderParams } from "../providers";
 import { BiconomyProvider } from "../providers/biconomy";
@@ -16,18 +16,18 @@ class Hyphen {
     depositManager: DepositManager;
     transfer: TransferManager;
     liquidityPool: LiquidityPools;
-    environment: string;
+    environment?: 'test' | 'staging' | 'prod';
     options: Options;
     supportedTokens: Map<number, void | SupportedToken[]>;
 
     constructor(provider: any, options: Options) {
         this._validate(options);
         this.options = options;
-        this.environment = options.environment;
+        this.environment = options.environment ?? 'prod';
         const biconomyProviderParams: BiconomyProviderParams = {
             providerParams: {
                 provider,
-                isBiconomyEnabled: options.biconomy?.enable
+                isBiconomyEnabled: options.biconomy?.enable ?? false
             },
             walletProvider: options?.walletProvider,
             enableBiconomy: options?.biconomy?.enable,
@@ -41,9 +41,9 @@ class Hyphen {
         }
         this.provider = new BiconomyProvider(biconomyProviderParams);
         this.tokens = new TokenManager({
-            environment: options.environment,
+            environment: this.environment,
             provider: this.provider,
-            infiniteApproval: options.infiniteApproval
+            infiniteApproval: options.infiniteApproval ?? false
         });
         this.contracts = new ContractManager();
         this.supportedTokens = new Map();
@@ -54,19 +54,19 @@ class Hyphen {
             signatureType: options.signatureType,
             onFundsTransfered: options.onFundsTransfered,
             transferCheckInterval: options.transferCheckInterval,
-            environment: options.environment
+            environment: this.environment
         }
         this.depositManager = new DepositManager(depositManagerParams);
 
         // LiquidiyPools Initialisation
         const liquidityPoolManagerParams: LiquidityPoolsParams = {
-            environment : options.environment
+            environment : this.environment
         }
         this.liquidityPool = new LiquidityPools(liquidityPoolManagerParams);
 
         // Transfer Manager Initialisation
         const transferManagerParams: TransferManagerParams = {
-            environment : options.environment
+            environment : this.environment
         }
         this.transfer = new TransferManager(transferManagerParams);
     }
@@ -114,4 +114,4 @@ class Hyphen {
     }
 }
 
-module.exports = { Hyphen, RESPONSE_CODES, SIGNATURE_TYPES }
+export { Hyphen, RESPONSE_CODES, SIGNATURE_TYPES, EXIT_STATUS }

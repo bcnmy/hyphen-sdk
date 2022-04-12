@@ -1,8 +1,10 @@
 import { Contract } from "@ethersproject/contracts"
 import { ContractInterface, ethers } from "ethers"
 
+export type Environment = 'test' | 'staging' | 'prod';
+
 export type Config = {
-    hyphenBaseUrl: object,
+    hyphenBaseUrl: Record<Environment, string>,
     initiateExitPath: string,
     getSupportedTokensPath: string,
     checkRequestStatusPath: string,
@@ -47,14 +49,14 @@ export type SupportedToken = {
 }
 
 export type Options = {
-    defaultAccount: string,
-    debug: boolean,
-    environment: string,
-    signatureType: string,
-    infiniteApproval: boolean,
-    transferCheckInterval: number, // Interval in milli seconds to check for transfer status
-    onFundsTransfered: (data: ExitResponse) => void,
-    biconomy: BiconomyOption,
+    defaultAccount?: string,
+    debug?: boolean,
+    environment?: Environment,
+    signatureType?: string,
+    infiniteApproval?: boolean,
+    transferCheckInterval?: number, // Interval in milli seconds to check for transfer status
+    onFundsTransfered?: (data: ExitResponse) => void,
+    biconomy?: BiconomyOption,
     walletProvider?: object
 }
 

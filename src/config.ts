@@ -321,9 +321,9 @@ defaultSupportedTokens.set(
 
 const config: Config = {
 	hyphenBaseUrl: {
-		"test": "https://hyphen-v2-integration-api.biconomy.io",
-		"staging": "https://hyphen-v2-staging-api.biconomy.io",
-		"prod": "https://hyphen-v2-api.biconomy.io"
+		test: "https://hyphen-v2-integration-api.biconomy.io",
+		staging: "https://hyphen-v2-staging-api.biconomy.io",
+		prod: "https://hyphen-v2-api.biconomy.io",
 	},
 	initiateExitPath: "/api/v1/insta-exit/initiate-exit",
 	getSupportedTokensPath: "/api/v1/admin/supported-token/list",

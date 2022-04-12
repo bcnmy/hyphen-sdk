@@ -73,7 +73,7 @@ export class TokenManager extends ContractManager {
                 log.info("Returning default list from config");
                 return config.defaultSupportedTokens.get(networkId);
             }
-        } catch (error) {
+        } catch (error: any) {
             log.info(error);
             log.info("Could not get token list from api so returning default list from config");
             return config.defaultSupportedTokens.get(networkId);

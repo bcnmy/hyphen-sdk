@@ -8,6 +8,7 @@ import { DepositManager, DepositManagerParams } from "../transaction/deposit";
 import { LiquidityPools, LiquidityPoolsParams } from "../liquidity-pools";
 import { log } from "../logs";
 import { TransferManager, TransferManagerParams } from "../transaction/transfer";
+import { LiquidityProvidersManager, LiquidityProvidersManagerParams } from "../liquidity-providers";
 
 class Hyphen {
     provider: BiconomyProvider;
@@ -15,6 +16,7 @@ class Hyphen {
     contracts: ContractManager;
     depositManager: DepositManager;
     transfer: TransferManager;
+    liquidityProviders: LiquidityProvidersManager;
     liquidityPool: LiquidityPools;
     environment?: 'test' | 'staging' | 'prod';
     options: Options;
@@ -57,6 +59,12 @@ class Hyphen {
             environment: this.environment
         }
         this.depositManager = new DepositManager(depositManagerParams);
+
+        // LiquidityProviders Manager Initialisation
+        const liquidityProvidersManagerParams: LiquidityProvidersManagerParams = {
+            provider: this.provider,
+        }
+        this.liquidityProviders = new LiquidityProvidersManager(liquidityProvidersManagerParams);
 
         // LiquidiyPools Initialisation
         const liquidityPoolManagerParams: LiquidityPoolsParams = {

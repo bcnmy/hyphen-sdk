@@ -1,5 +1,3 @@
-const { config } = require('../../config');
-
 export type RESTAPI_PARAMS = {
     method: RequestMethod,
     baseURL: string,
@@ -51,10 +49,4 @@ export function restAPI(params: RESTAPI_PARAMS): Promise<any | void> {
                 reject(error);
             });
     });
-}
-
-
-export function getHyphenBaseURL(_environment?: string) {
-    const environment = _environment || "prod";
-    return config.hyphenBaseUrl[environment];
 }

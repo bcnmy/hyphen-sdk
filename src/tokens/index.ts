@@ -1,13 +1,14 @@
-import { RequestMethod, getHyphenBaseURL, restAPI } from "../utils/network";
-import { config, RESPONSE_CODES } from "../config";
+import { RequestMethod, restAPI } from "../utils/network";
+import { Configuration, RESPONSE_CODES } from "../config";
 import { formatMessage } from "../util";
 import { log } from "../logs";
 import { ContractManager } from "../contract";
 import { HyphenProvider } from "../providers";
-import { Transaction, TransactionManager, TransactionResponse } from "../transaction";
-import { BigNumber, ContractInterface, ethers } from "ethers";
+import { Transaction, TransactionResponse } from "../transaction";
+import { BigNumber, ethers } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { getERC20ApproveDataToSign, getMetaTxnCompatibleTokenData, getSignatureParameters } from "../meta-transaction/util";
+import { Environment } from "../types";
 
 export type SupportedToken = {
     tokenSymbol: string,
@@ -16,17 +17,19 @@ export type SupportedToken = {
 }
 
 export type TokenManagerParams = {
-    environment: string,
+    environment: Environment,
     provider: HyphenProvider,
-    infiniteApproval: boolean
+    infiniteApproval: boolean,
+    config: Configuration
 }
 
 export class TokenManager extends ContractManager {
 
-    environment: string;
+    environment: Environment;
     supportedTokens: Map<number, void | SupportedToken[]>;
     provider: HyphenProvider;
     infiniteApproval: boolean;
+    config: Configuration;
 
     constructor(params: TokenManagerParams) {
         super();
@@ -34,6 +37,7 @@ export class TokenManager extends ContractManager {
         this.provider = params.provider;
         this.infiniteApproval = params.infiniteApproval;
         this.supportedTokens = new Map();
+        this.config = params.config
     }
 
     async init(networkId: number) {
@@ -56,8 +60,8 @@ export class TokenManager extends ContractManager {
 
         const getTokenRequest = {
             method: RequestMethod.GET,
-            baseURL: getHyphenBaseURL(this.environment),
-            path: config.getSupportedTokensPath,
+            baseURL: this.config.getHyphenBaseURL(this.environment),
+            path: this.config.getSupportedTokensPath,
             body: undefined,
             queryParams: queryParamMap
         }
@@ -71,17 +75,17 @@ export class TokenManager extends ContractManager {
                 const error = formatMessage(RESPONSE_CODES.ERROR_RESPONSE, `Unable to get supported tokens`);
                 log.info(error);
                 log.info("Returning default list from config");
-                return config.defaultSupportedTokens.get(networkId);
+                return this.config.defaultSupportedTokens.get(networkId);
             }
         } catch (error) {
-            log.info(error);
+            log.info(JSON.stringify(error));
             log.info("Could not get token list from api so returning default list from config");
-            return config.defaultSupportedTokens.get(networkId);
+            return this.config.defaultSupportedTokens.get(networkId);
         }
     }
 
     async getERC20TokenDecimals(address: string) {
-        const tokenContract = this.getContract({ address, abi: config.erc20TokenABI, provider: this.provider.getProvider(false), networkId: await this.provider.getNetworkId() });
+        const tokenContract = this.getContract({ address, abi: this.config.erc20TokenABI, provider: this.provider.getProvider(false), networkId: await this.provider.getNetworkId() });
         if (tokenContract) {
             return tokenContract.decimals();
         } else {
@@ -93,7 +97,7 @@ export class TokenManager extends ContractManager {
         if(tokenAddress && userAddress && spender) {
             const tokenContract = this.getContract({
                 address: tokenAddress,
-                abi: config.erc20TokenABI,
+                abi: this.config.erc20TokenABI,
                 networkId: await this.provider.getNetworkId(),
                 provider: this.provider.getProvider(false)
             });
@@ -105,9 +109,9 @@ export class TokenManager extends ContractManager {
     }
 
     getERC20ABI(networkId: number, tokenAddress: string) {
-        let abi = config.erc20ABIByToken.get(tokenAddress.toLowerCase());
+        let abi = this.config.erc20ABIByToken.get(tokenAddress.toLowerCase());
         if(!abi) {
-            abi = config.erc20ABIByNetworkId.get(networkId);
+            abi = this.config.erc20ABIByNetworkId.get(networkId);
         }
         // tokenAddress to be used in future for any custom token support
         return abi;
@@ -127,7 +131,7 @@ export class TokenManager extends ContractManager {
 
             const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, provider);
             const tokenContractInterface = new ethers.utils.Interface(JSON.stringify(erc20ABI));
-            const tokenInfo = config.tokenAddressMap[tokenAddress.toLowerCase()] ? config.tokenAddressMap[tokenAddress.toLowerCase()][currentNetwork.chainId] : undefined;
+            const tokenInfo = this.config.tokenAddressMap[tokenAddress.toLowerCase()] ? this.config.tokenAddressMap[tokenAddress.toLowerCase()][currentNetwork.chainId] : undefined;
             if (tokenContract) {
                 if((infiniteApproval !== undefined && infiniteApproval) || (infiniteApproval === undefined && this.infiniteApproval)) {
                     approvalAmount = ethers.constants.MaxUint256;
@@ -136,21 +140,21 @@ export class TokenManager extends ContractManager {
                 if (spender && approvalAmount) {
                     // check if biconomy enable?
                     if(this.provider.isBiconomyEnabled) {
-                        const customMetaTxSupport = config.customMetaTxnSupportedNetworksForERC20Tokens[currentNetwork.chainId];
+                        const customMetaTxSupport = this.config.customMetaTxnSupportedNetworksForERC20Tokens[currentNetwork.chainId];
                         if(customMetaTxSupport && customMetaTxSupport.indexOf(tokenAddress.toLowerCase()) > -1) {
                             // Call executeMetaTransaction method
                             const functionSignature = tokenContractInterface.encodeFunctionData("approve", [spender, approvalAmount.toString()]);
-                            const tokenData = getMetaTxnCompatibleTokenData(tokenAddress, currentNetwork.chainId);
+                            const tokenData = getMetaTxnCompatibleTokenData(this.config, tokenAddress, currentNetwork.chainId);
                             const dataToSign = await getERC20ApproveDataToSign({
                                 contract: tokenContract,
                                 abi: erc20ABI,
-                                domainType: config.erc20MetaTxnDomainType,
-                                metaTransactionType: config.customMetaTxnType,
+                                domainType: this.config.erc20MetaTxnDomainType,
+                                metaTransactionType: this.config.customMetaTxnType,
                                 userAddress,
                                 spender,
                                 amount: approvalAmount.toString(),
-                                name: tokenData.name,
-                                version: tokenData.version,
+                                name: tokenData!.name,
+                                version: tokenData!.version,
                                 address: tokenAddress,
                                 salt: '0x' + (currentNetwork.chainId).toString(16).padStart(64, '0')
                             });
@@ -185,8 +189,8 @@ export class TokenManager extends ContractManager {
                             const nonce = await tokenContract.nonces(userAddress);
                             const permitDataToSign = {
                                 types: {
-                                  EIP712Domain: config.domainType,
-                                  Permit: config.eip2612PermitType,
+                                  EIP712Domain: this.config.domainType,
+                                  Permit: this.config.eip2612PermitType,
                                 },
                                 domain: usdcDomainData,
                                 primaryType: "Permit",

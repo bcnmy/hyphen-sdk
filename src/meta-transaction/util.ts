@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import { ERC20ApproveRequest } from "../types";
-
-const { config } = require('../config');
+import type { Configuration } from "../config";
 
 const getERC20ApproveDataToSign = async (data: ERC20ApproveRequest) => {
     const contract = data.contract;
@@ -33,7 +32,7 @@ const getERC20ApproveDataToSign = async (data: ERC20ApproveRequest) => {
     return dataToSign;
 }
 
-const getMetaTxnCompatibleTokenData = (adddress: string, chainId: number) => {
+const getMetaTxnCompatibleTokenData = (config: Configuration, adddress: string, chainId: number) => {
     let data;
     if(adddress && chainId !== undefined) {
         data = config.metaTxnCompatibleTokenData[chainId][adddress.toLowerCase()];

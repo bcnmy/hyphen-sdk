@@ -1,11 +1,11 @@
 import { BigNumber, ethers } from "ethers"
 import { HyphenProvider } from "../../providers"
-import { isNativeAddress, formatMessage } from '../../util';
-import { config, EXIT_STATUS, RESPONSE_CODES } from "../../config";
+import { formatMessage } from '../../util';
+import { Configuration, EXIT_STATUS, RESPONSE_CODES } from "../../config";
 import { log } from "../../logs";
 import { TransactionManager, TransactionResponse, Transaction } from "..";
-import { CheckStatusRequest, CheckStatusResponse, ExitResponse } from "../../types";
-import { getHyphenBaseURL, RequestMethod, restAPI } from "../../utils/network";
+import { CheckStatusRequest, CheckStatusResponse, Environment, ExitResponse } from "../../types";
+import { RequestMethod, restAPI } from "../../utils/network";
 
 export type CheckDepositStatusRequest = {
     depositHash: string,
@@ -29,7 +29,8 @@ export type DepositManagerParams = {
     signatureType?: string,
     onFundsTransfered?: (data: ExitResponse) => void,
     transferCheckInterval?: number,
-    environment?: string
+    environment?: Environment
+    config: Configuration
 }
 
 export class DepositManager extends TransactionManager {
@@ -37,8 +38,9 @@ export class DepositManager extends TransactionManager {
     signatureType?: string;
     onFundsTransfered?: (data: ExitResponse) => void;
     transferCheckInterval?: number;
-    environment?: string;
+    environment?: Environment;
     depositTransactionListenerMap: Map<string, any>;
+    config: Configuration;
 
     constructor(params: DepositManagerParams) {
         super();
@@ -47,19 +49,20 @@ export class DepositManager extends TransactionManager {
         this.onFundsTransfered = params.onFundsTransfered;
         this.transferCheckInterval = params.transferCheckInterval;
         this.environment = params.environment;
+        this.config = params.config;
         this.depositTransactionListenerMap = new Map();
     }
 
     deposit = async (request: DepositRequest): Promise<TransactionResponse | undefined> => {
         const provider = this.hyphenProvider.getProvider(request.useBiconomy);
-        if (isNativeAddress(request.tokenAddress)) {
+        if (this.config.isNativeAddress(request.tokenAddress)) {
             const depositTransaction = await this._depositTokensToLiquidityPoolManager(request);
             if (depositTransaction) {
                 this.listenForExitTransaction(depositTransaction, parseInt(request.fromChainId, 10));
             }
             return depositTransaction;
         } else {
-            const tokenContract = new ethers.Contract(request.tokenAddress, config.erc20TokenABI, provider);
+            const tokenContract = new ethers.Contract(request.tokenAddress, this.config.erc20TokenABI, provider);
             const allowance = await tokenContract.allowance(request.sender, request.depositContractAddress);
             log.info(`Allowance given to LiquidityPoolManager is ${allowance}`);
             if (BigNumber.from(request.amount).lte(allowance)) {
@@ -78,11 +81,11 @@ export class DepositManager extends TransactionManager {
         try {
             const provider = this.hyphenProvider.getProvider(request.useBiconomy);
             const lpManager = new ethers.Contract(request.depositContractAddress,
-                config.liquidityPoolManagerABI, provider);
+                this.config.liquidityPoolManagerABI, provider);
 
             let txData;
             let value = '0x0';
-            if (isNativeAddress(request.tokenAddress)) {
+            if (this.config.isNativeAddress(request.tokenAddress)) {
                 const { data } = await lpManager.populateTransaction.depositNative(request.receiver, request.toChainId, request.tag);
                 txData = data;
                 value = ethers.utils.hexValue(ethers.BigNumber.from(request.amount));
@@ -104,7 +107,7 @@ export class DepositManager extends TransactionManager {
 
             return this.sendTransaction(provider, txParams);
         } catch (error) {
-            log.error(error);
+            log.error(JSON.stringify(error));
         }
     }
 
@@ -118,8 +121,8 @@ export class DepositManager extends TransactionManager {
 
         const checkTransferStatusRequest = {
             method: RequestMethod.GET,
-            baseURL: getHyphenBaseURL(this.environment),
-            path: config.checkTransferStatusPath,
+            baseURL: this.config.getHyphenBaseURL(this.environment),
+            path: this.config.checkTransferStatusPath,
             queryParams: queryParamMap
         }
         const response = await restAPI(checkTransferStatusRequest);
@@ -128,7 +131,7 @@ export class DepositManager extends TransactionManager {
 
     async listenForExitTransaction(transaction: TransactionResponse, fromChainId: number) {
         if (this.onFundsTransfered) {
-            const interval = this.transferCheckInterval || config.defaultExitCheckInterval;
+            const interval = this.transferCheckInterval || this.config.defaultExitCheckInterval;
             await transaction.wait(1);
             log.info(`Deposit transaction Confirmed. Listening for exit transaction now`);
             let invocationCount = 0;
@@ -147,8 +150,8 @@ export class DepositManager extends TransactionManager {
                             this.onFundsTransfered(response);
                     }
                 }
-                if (invocationCount >= config.maxDepositCheckCallbackCount) {
-                    log.info(`Max callback count reached ${config.maxDepositCheckCallbackCount}. Clearing interval now`);
+                if (invocationCount >= this.config.maxDepositCheckCallbackCount) {
+                    log.info(`Max callback count reached ${this.config.maxDepositCheckCallbackCount}. Clearing interval now`);
                     clearInterval(this.depositTransactionListenerMap.get(depositHash))
                     this.depositTransactionListenerMap.delete(depositHash);
                 }
@@ -169,8 +172,8 @@ export class DepositManager extends TransactionManager {
         };
         const preDepositStatusRequest = {
             method: RequestMethod.POST,
-            baseURL: getHyphenBaseURL(this.environment),
-            path: config.checkRequestStatusPath,
+            baseURL: this.config.getHyphenBaseURL(this.environment),
+            path: this.config.checkRequestStatusPath,
             body
         }
         return await restAPI(preDepositStatusRequest);

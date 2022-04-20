@@ -32,10 +32,19 @@ const formatMessage = (code: number, message: string) => {
   };
 };
 
+function isNumeric(str: string) {
+  try {
+    if (typeof str !== "string") return false;
+    return !isNaN(parseFloat(str));
+  } catch (e) {
+    return false;
+  }
+}
+
 const convertTokenAddressesToLowercase = (token: Token): Token => {
   const newToken = JSON.parse(JSON.stringify(token));
   for (const [key, value] of Object.entries(token)) {
-    if (typeof value !== "string" && value.address) {
+    if (isNumeric(key) && typeof value !== "string" && value?.address) {
       newToken[key].address = value.address.toLowerCase();
     }
   }

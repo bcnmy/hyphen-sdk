@@ -1,5 +1,5 @@
 import { Contract } from "@ethersproject/contracts"
-import { ContractInterface, ethers } from "ethers"
+import { ContractInterface, BigNumberish } from "ethers"
 
 export type Environment = 'test' | 'staging' | 'prod';
 
@@ -31,7 +31,7 @@ export type Config = {
 
 export type CheckStatusRequest = {
     tokenAddress: string,
-    amount: number,
+    amount: BigNumberish,
     fromChainId: number,
     toChainId: number,
     userAddress: string
@@ -39,7 +39,13 @@ export type CheckStatusRequest = {
 
 export type CheckStatusResponse = {
     code: number,
-    message: string
+    message: string,
+    allowanceGiven: boolean,
+    currentAllowance: string,
+    depositContract: string,
+    requiredAllowance: string,
+    responseCode: number,
+    userAddress: string
 }
 
 export type SupportedToken = {
@@ -77,6 +83,9 @@ export type FetchOption = {
     method: string,
     headers: any
 }
+
+export type FetchCall = ((input: RequestInfo, init?: RequestInit | undefined) => Promise<Response>) |
+((arg0: string, arg1: FetchOption) => Promise<any>);
 
 export type ExitRequest = {
     sender: string,

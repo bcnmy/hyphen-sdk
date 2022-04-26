@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers"
+import { BigNumber, ethers, Wallet } from "ethers"
 import { HyphenProvider } from "../../providers"
 import { isNativeAddress, formatMessage } from '../../util';
 import { config, EXIT_STATUS, RESPONSE_CODES } from "../../config";
@@ -50,12 +50,12 @@ export class DepositManager extends TransactionManager {
         this.depositTransactionListenerMap = new Map();
     }
 
-    deposit = async (request: DepositRequest): Promise<TransactionResponse | undefined> => {
+    deposit = async (request: DepositRequest, wallet?: Wallet): Promise<TransactionResponse | undefined> => {
         const provider = this.hyphenProvider.getProvider(request.useBiconomy);
         if (isNativeAddress(request.tokenAddress)) {
-            const depositTransaction = await this._depositTokensToLiquidityPoolManager(request);
+            const depositTransaction = await this._depositTokensToLiquidityPoolManager(request, wallet);
             if (depositTransaction) {
-                this.listenForExitTransaction(depositTransaction, parseInt(request.fromChainId, 10));
+                await this.listenForExitTransaction(depositTransaction, parseInt(request.fromChainId, 10));
             }
             return depositTransaction;
         } else {
@@ -63,9 +63,9 @@ export class DepositManager extends TransactionManager {
             const allowance = await tokenContract.allowance(request.sender, request.depositContractAddress);
             log.info(`Allowance given to LiquidityPoolManager is ${allowance}`);
             if (BigNumber.from(request.amount).lte(allowance)) {
-                const depositTransaction = await this._depositTokensToLiquidityPoolManager(request);
+                const depositTransaction = await this._depositTokensToLiquidityPoolManager(request, wallet);
                 if (depositTransaction) {
-                    this.listenForExitTransaction(depositTransaction, parseInt(request.fromChainId, 10));
+                    await this.listenForExitTransaction(depositTransaction, parseInt(request.fromChainId, 10));
                 }
                 return depositTransaction;
             } else {
@@ -74,7 +74,7 @@ export class DepositManager extends TransactionManager {
         }
     }
 
-    _depositTokensToLiquidityPoolManager = async (request: DepositRequest) => {
+    _depositTokensToLiquidityPoolManager = async (request: DepositRequest, wallet?: Wallet) => {
         try {
             const provider = this.hyphenProvider.getProvider(request.useBiconomy);
             const lpManager = new ethers.Contract(request.depositContractAddress,
@@ -102,9 +102,9 @@ export class DepositManager extends TransactionManager {
                 txParams.signatureType = this.signatureType;
             }
 
-            return this.sendTransaction(provider, txParams);
+            return this.sendTransaction(provider, txParams, wallet);
         } catch (error) {
-            log.error(error);
+            log.error(String(error));
         }
     }
 

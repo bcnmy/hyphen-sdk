@@ -1,4 +1,14 @@
-const { config } = require('../../config');
+import { config } from '../../config';
+import { FetchCall } from '../../types';
+
+import NodeFetch from 'node-fetch';
+
+let _fetch: FetchCall;
+if(typeof window === "undefined") {
+    _fetch = NodeFetch;
+} else {
+    _fetch = fetch;
+}
 
 export type RESTAPI_PARAMS = {
     method: RequestMethod,
@@ -42,8 +52,15 @@ export function restAPI(params: RESTAPI_PARAMS): Promise<any | void> {
             }
             queryParamString = queryParamsArray.join("&");
         }
-        fetch(`${params.baseURL}${params.path}?${queryParamString}`, fetchOptions)
-            .then(response => response.json())
+        _fetch(`${params.baseURL}${params.path}?${queryParamString}`, fetchOptions)
+            .then(response => {
+                if (response.headers.get('content-type').includes('application/json')) {
+                    return response.json();
+                }
+                else {
+                    return response.text();
+                }
+            })
             .then((response) => {
                 resolve(response);
             })
@@ -53,8 +70,7 @@ export function restAPI(params: RESTAPI_PARAMS): Promise<any | void> {
     });
 }
 
-
 export function getHyphenBaseURL(_environment?: string) {
     const environment = _environment || "prod";
-    return config.hyphenBaseUrl[environment];
+    return (config.hyphenBaseUrl as any)[environment];
 }

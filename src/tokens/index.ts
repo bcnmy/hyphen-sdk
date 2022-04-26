@@ -4,8 +4,8 @@ import { formatMessage } from "../util";
 import { log } from "../logs";
 import { ContractManager } from "../contract";
 import { HyphenProvider } from "../providers";
-import { Transaction, TransactionManager, TransactionResponse } from "../transaction";
-import { BigNumber, ContractInterface, ethers } from "ethers";
+import { Transaction, TransactionResponse } from "../transaction";
+import { BigNumber, Wallet, ethers } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { getERC20ApproveDataToSign, getMetaTxnCompatibleTokenData, getSignatureParameters } from "../meta-transaction/util";
 
@@ -74,7 +74,7 @@ export class TokenManager extends ContractManager {
                 return config.defaultSupportedTokens.get(networkId);
             }
         } catch (error) {
-            log.info(error);
+            log.info(String(error));
             log.info("Could not get token list from api so returning default list from config");
             return config.defaultSupportedTokens.get(networkId);
         }
@@ -90,7 +90,7 @@ export class TokenManager extends ContractManager {
     }
 
     async getERC20Allowance(tokenAddress: string, userAddress: string, spender: string) {
-        if(tokenAddress && userAddress && spender) {
+        if (tokenAddress && userAddress && spender) {
             const tokenContract = this.getContract({
                 address: tokenAddress,
                 abi: config.erc20TokenABI,
@@ -106,7 +106,7 @@ export class TokenManager extends ContractManager {
 
     getERC20ABI(networkId: number, tokenAddress: string) {
         let abi = config.erc20ABIByToken.get(tokenAddress.toLowerCase());
-        if(!abi) {
+        if (!abi) {
             abi = config.erc20ABIByNetworkId.get(networkId);
         }
         // tokenAddress to be used in future for any custom token support
@@ -114,14 +114,14 @@ export class TokenManager extends ContractManager {
     }
 
     approveERC20 = async (tokenAddress: string, spender: string, amount: string, userAddress: string,
-        infiniteApproval: boolean, useBiconomy: boolean):
+        infiniteApproval: boolean, useBiconomy: boolean, wallet?: Wallet):
         Promise<TransactionResponse | undefined> => {
         const provider = this.provider.getProvider(useBiconomy);
         const currentNetwork = await provider.getNetwork();
         let approvalAmount: BigNumber = BigNumber.from(amount);
-        if(currentNetwork) {
+        if (currentNetwork) {
             const erc20ABI = this.getERC20ABI(currentNetwork.chainId, tokenAddress);
-            if(!erc20ABI) {
+            if (!erc20ABI) {
                 throw new Error(`ERC20 ABI not found for token address ${tokenAddress} on networkId ${currentNetwork.chainId}`)
             }
 
@@ -129,15 +129,15 @@ export class TokenManager extends ContractManager {
             const tokenContractInterface = new ethers.utils.Interface(JSON.stringify(erc20ABI));
             const tokenInfo = config.tokenAddressMap[tokenAddress.toLowerCase()] ? config.tokenAddressMap[tokenAddress.toLowerCase()][currentNetwork.chainId] : undefined;
             if (tokenContract) {
-                if((infiniteApproval !== undefined && infiniteApproval) || (infiniteApproval === undefined && this.infiniteApproval)) {
+                if ((infiniteApproval !== undefined && infiniteApproval) || (infiniteApproval === undefined && this.infiniteApproval)) {
                     approvalAmount = ethers.constants.MaxUint256;
                     log.info(`Infinite approval flag is true, so overwriting the amount with value ${amount}`);
                 }
                 if (spender && approvalAmount) {
                     // check if biconomy enable?
-                    if(this.provider.isBiconomyEnabled) {
+                    if (this.provider.isBiconomyEnabled) {
                         const customMetaTxSupport = config.customMetaTxnSupportedNetworksForERC20Tokens[currentNetwork.chainId];
-                        if(customMetaTxSupport && customMetaTxSupport.indexOf(tokenAddress.toLowerCase()) > -1) {
+                        if (customMetaTxSupport && customMetaTxSupport.indexOf(tokenAddress.toLowerCase()) > -1) {
                             // Call executeMetaTransaction method
                             const functionSignature = tokenContractInterface.encodeFunctionData("approve", [spender, approvalAmount.toString()]);
                             const tokenData = getMetaTxnCompatibleTokenData(tokenAddress, currentNetwork.chainId);
@@ -156,7 +156,7 @@ export class TokenManager extends ContractManager {
                             });
 
                             const _provider = this.provider.getProviderWithAccounts(useBiconomy) as JsonRpcProvider;
-                            if(_provider) {
+                            if (_provider) {
                                 const signature = await _provider.send("eth_signTypedData_v4", [userAddress, dataToSign])
                                 const { r, s, v } = getSignatureParameters(signature);
 
@@ -168,14 +168,14 @@ export class TokenManager extends ContractManager {
                                     from: userAddress,
                                     value: "0x0"
                                 };
-                                return this.sendTransaction(provider, txParams);
+                                return this.sendTransaction(provider, txParams, wallet);
 
                             } else {
                                 throw new Error("Couldn't get a provider to get user signature. Make sure you have passed correct provider or walletProvider field in Hyphen constructor.");
                             }
-                        } else if(tokenInfo && tokenInfo.symbol === 'USDC' && tokenInfo.permitSupported) {
+                        } else if (tokenInfo && tokenInfo.symbol === 'USDC' && tokenInfo.permitSupported) {
                             // If token is USDC call permit method
-                            const deadline:number = Number(Math.floor(Date.now() / 1000 + 3600));
+                            const deadline: number = Number(Math.floor(Date.now() / 1000 + 3600));
                             const usdcDomainData = {
                                 name: tokenInfo.name,
                                 version: tokenInfo.version,
@@ -185,21 +185,21 @@ export class TokenManager extends ContractManager {
                             const nonce = await tokenContract.nonces(userAddress);
                             const permitDataToSign = {
                                 types: {
-                                  EIP712Domain: config.domainType,
-                                  Permit: config.eip2612PermitType,
+                                    EIP712Domain: config.domainType,
+                                    Permit: config.eip2612PermitType,
                                 },
                                 domain: usdcDomainData,
                                 primaryType: "Permit",
                                 message: {
-                                  owner: userAddress,
-                                  spender,
-                                  value: approvalAmount.toString(),
-                                  nonce: parseInt(nonce, 10),
-                                  deadline
+                                    owner: userAddress,
+                                    spender,
+                                    value: approvalAmount.toString(),
+                                    nonce: parseInt(nonce, 10),
+                                    deadline
                                 },
                             };
                             const _provider = this.provider.getProviderWithAccounts(useBiconomy) as JsonRpcProvider;
-                            if(_provider) {
+                            if (_provider) {
                                 const signature = await _provider.send("eth_signTypedData_v4", [userAddress, JSON.stringify(permitDataToSign)]);
                                 const { r, s, v } = getSignatureParameters(signature);
 
@@ -210,7 +210,7 @@ export class TokenManager extends ContractManager {
                                     from: userAddress,
                                     value: '0x0'
                                 };
-                                return this.sendTransaction(provider, txParams);
+                                return this.sendTransaction(provider, txParams, wallet);
                             } else {
                                 throw new Error("Couldn't get a provider to get user signature. Make sure you have passed correct provider or walletProvider field in Hyphen constructor.");
                             }
@@ -222,7 +222,7 @@ export class TokenManager extends ContractManager {
                                 from: userAddress,
                                 value: '0x0'
                             };
-                            return this.sendTransaction(provider, txParams);
+                            return this.sendTransaction(provider, txParams, wallet);
                         }
                     } else {
                         const { data } = await tokenContract.populateTransaction.approve(spender, approvalAmount.toString());
@@ -232,7 +232,7 @@ export class TokenManager extends ContractManager {
                             from: userAddress,
                             value: '0x0'
                         };
-                        return this.sendTransaction(provider, txParams);
+                        return this.sendTransaction(provider, txParams, wallet);
                     }
                 } else {
                     log.info(`One of the inputs is not valid => spender: ${spender}, amount: ${amount}`)

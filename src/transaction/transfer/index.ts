@@ -1,6 +1,7 @@
-import { config, RESPONSE_CODES } from "../../config";
+import { Configuration, RESPONSE_CODES } from "../../config";
+import { Environment } from "../../types";
 import { formatMessage } from "../../util";
-import { getHyphenBaseURL, RequestMethod, restAPI } from "../../utils/network";
+import { RequestMethod, restAPI } from "../../utils/network";
 
 export type ManualExitResponse = {
     code: number,
@@ -9,13 +10,16 @@ export type ManualExitResponse = {
 }
 
 export type TransferManagerParams = {
-    environment: string
+    environment: Environment,
+    config: Configuration
 }
 export class TransferManager {
-    environment: string;
+    environment: Environment;
+    config: Configuration;
 
     constructor(params: TransferManagerParams) {
         this.environment = params.environment;
+        this.config = params.config
     }
 
     async triggerManualTransfer(depositHash: string, chainId: string) : Promise<ManualExitResponse | undefined> {
@@ -26,8 +30,8 @@ export class TransferManager {
 
         const triggerManualTransferRequest = {
             method: RequestMethod.GET,
-            baseURL: getHyphenBaseURL(this.environment),
-            path: config.getManualTransferPath,
+            baseURL: this.config.getHyphenBaseURL(this.environment),
+            path: this.config.getManualTransferPath,
         }
         const response = await restAPI(triggerManualTransferRequest);
         return response;

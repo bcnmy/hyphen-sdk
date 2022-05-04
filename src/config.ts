@@ -8,10 +8,10 @@ import type {
   TokenConfigurationResponse,
   NetworkConfigurationResponse,
 } from "./types";
-import LIQUIDITY_POOL_MANAGER_ABI from "../abi/liquidity-pool.json";
-import ERC20_ABI from "../abi/erc20.json";
-import EIP2612_ABI from "../abi/erc20-eip2612.json";
-import CUSTOM_META_TXN_ENABLED_ERC20_ABI from "../abi/erc20-metatx.json";
+import LIQUIDITY_POOL_MANAGER_ABI from "./abi/liquidity-pool";
+import ERC20_ABI from "./abi/erc20";
+import EIP2612_ABI from "./abi/erc20-eip2612";
+import CUSTOM_META_TXN_ENABLED_ERC20_ABI from "./abi/erc20-metatx";
 
 const ERC20_META_TXN_DOMAIN_TYPE = JSON.parse(
   '[{ "name": "name", "type": "string" }, { "name": "version", "type": "string" }, { "name": "verifyingContract", "type": "address" }, { "name": "salt", "type": "bytes32" }]'

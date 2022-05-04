@@ -1,18 +1,20 @@
-import { config, RESPONSE_CODES } from "../config";
-import { FetchOption } from "../types";
+import { RESPONSE_CODES } from "../config";
 import { formatMessage } from "../util";
-import { log } from "../logs";
-import { getHyphenBaseURL, RequestMethod, restAPI } from "../utils/network";
+import { RequestMethod, restAPI } from "../utils/network";
+import type { Configuration } from "../config";
+import type { Environment } from "../types";
 
 export type LiquidityPoolsParams = {
-    environment: string
+    environment: Environment
+    config: Configuration
 }
-
 export class LiquidityPools {
-    environment: string;
+    environment: Environment;
+    config: Configuration;
 
     constructor(params: LiquidityPoolsParams) {
         this.environment = params.environment;
+        this.config = params.config;
     }
 
     async getPoolInformation(tokenAddress: string, fromChainId: number, toChainId: number) {
@@ -26,8 +28,8 @@ export class LiquidityPools {
 
         const checkTransferStatusRequest = {
             method: RequestMethod.GET,
-            baseURL: getHyphenBaseURL(this.environment),
-            path: config.getPoolInfoPath,
+            baseURL: this.config.getHyphenBaseURL(this.environment),
+            path: this.config.getPoolInfoPath,
             queryParams: queryParamMap
         }
         const response = await restAPI(checkTransferStatusRequest);

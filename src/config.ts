@@ -1,5 +1,5 @@
 import { ContractInterface } from "ethers";
-import { RequestMethod, restAPI } from "./utils/network";
+import { RequestMethod, makeHttpRequest } from "./utils/network";
 import { convertTokenAddressesToLowercase } from "./util";
 import type {
   Config,
@@ -148,6 +148,7 @@ class Configuration implements Config {
   checkTransferStatusPath = "/api/v1/insta-exit/check-status";
   tokenConfigurationPath = "/api/v1/configuration/tokens";
   networkConfigurationPath = "/api/v1/configuration/networks";
+  getTransferFeePath = "/api/v1/data/transferFee";
 
   // ABI
   liquidityPoolManagerABI = LIQUIDITY_POOL_MANAGER_ABI;
@@ -201,14 +202,14 @@ class Configuration implements Config {
         baseURL: this.getHyphenBaseURL(this.environment),
         path: this.tokenConfigurationPath,
       };
-      tokenConfiguration = (await restAPI(getTokenConfigurationRequest)).message;
+      tokenConfiguration = (await makeHttpRequest(getTokenConfigurationRequest)).message;
 
       const getNetworkConfigurationRequest = {
         method: RequestMethod.GET,
         baseURL: this.getHyphenBaseURL(this.environment),
         path: this.networkConfigurationPath,
       };
-      networkConfiguration = (await restAPI(getNetworkConfigurationRequest)).message;
+      networkConfiguration = (await makeHttpRequest(getNetworkConfigurationRequest)).message;
     } catch (e) {
       console.error(`Error while fetching configuration: ${e}`);
       throw e;
@@ -303,6 +304,7 @@ const RESPONSE_CODES = {
   ALLOWANCE_NOT_GIVEN: 150,
   BAD_REQUEST: 400,
   SUCCESS: 200,
+  EXPECTATION_FAILED: 417,
 };
 
 const EXIT_STATUS = {

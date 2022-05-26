@@ -1,13 +1,15 @@
-import { Hyphen, RESPONSE_CODES } from "../src/hyphen";
 import { ethers } from "ethers";
-import path from "path";
 import dotenv from "dotenv";
+import path from "path";
+import { Hyphen, RESPONSE_CODES } from "../../src/hyphen";
+import { GetTransferFeeRequest } from "../../src/types";
 
 dotenv.config({ path: path.resolve(__dirname, './.env') });
 
 
-describe('deposit transaction cross-chain', () => {
+describe('deposit manager e2e tests', () => {
     let testConfig: any = {};
+    let hyphenSDK: Hyphen;
 
     beforeAll(async () => {
         testConfig.providerURL = process.env.PROVIDER_URL;
@@ -26,33 +28,33 @@ describe('deposit transaction cross-chain', () => {
         testConfig.depositAmountWei = process.env.DEPOSIT_AMOUNT_WEI!;
 
         testConfig.defaultAccount = await testConfig.signer.getAddress();
-    })
 
-    it('should transfer USDT from Mumbai to Goerli', async () => {
-        try {
-            let hyphen = new Hyphen(testConfig.signer.provider, {
-                debug: true, // If 'true', it prints debug logs on console window
-                environment: "staging", // It can be "test" or "prod"
-                onFundsTransfered: (data) => {
-                    // console.log("funds transferred: \n", data);
-                },
-                defaultAccount: testConfig.defaultAccount,
-                // signatureType: SIGNATURE_TYPES.PERSONAL,
-                infiniteApproval: false,
-                transferCheckInterval: -1, // Interval in milli seconds to check for transfer status
-                biconomy: {
-                    enable: false,
-                    apiKey: "",
-                    debug: true
-                }
-            });
+        hyphenSDK = new Hyphen(testConfig.signer.provider, {
+            debug: true, // If 'true', it prints debug logs on console window
+            environment: "staging", // It can be "test" or "prod"
+            onFundsTransfered: (data) => {
+                // console.log("funds transferred: \n", data);
+            },
+            defaultAccount: testConfig.defaultAccount,
+            // signatureType: SIGNATURE_TYPES.PERSONAL,
+            infiniteApproval: false,
+            transferCheckInterval: -1, // Interval in milli seconds to check for transfer status
+            biconomy: {
+                enable: false,
+                apiKey: "",
+                debug: true
+            }
+        });
 
-            await hyphen.init();
+        await hyphenSDK.init();
 
-            expect(hyphen.options.defaultAccount).toEqual(testConfig.defaultAccount);
+        expect(hyphenSDK.options.defaultAccount).toEqual(testConfig.defaultAccount);
+    });
 
+    describe('deposit transaction cross-chain', () => {
+        it('should transfer USDT from Mumbai to Goerli', async () => {
             // check and approve USDT tokens
-            let preTransferStatus = await hyphen.depositManager.preDepositStatus({
+            let preTransferStatus = await hyphenSDK.depositManager.preDepositStatus({
                 tokenAddress: testConfig.tokenAddress, // Token address on fromChain which needs to be transferred
                 amount: testConfig.lpAllowanceAmountWei, // Amount of tokens to be transferred in smallest unit eg wei
                 fromChainId: Number(testConfig.mumbaiID), // Chain id from where tokens needs to be transferred
@@ -64,7 +66,7 @@ describe('deposit transaction cross-chain', () => {
 
             if (preTransferStatus.code === RESPONSE_CODES.ALLOWANCE_NOT_GIVEN) {
                 // ❌ Not enough apporval from user address on LiquidityPoolManager contract on fromChain
-                let approveTx = await hyphen.tokens.approveERC20(
+                let approveTx = await hyphenSDK.tokens.approveERC20(
                     testConfig.tokenAddress,
                     testConfig.lpContractAddress,
                     testConfig.lpAllowanceAmountWei, // 1000 USDT
@@ -84,7 +86,7 @@ describe('deposit transaction cross-chain', () => {
                 // can be called with 'await' to wait for transaction confirmation.
             }
 
-            let depositTx = await hyphen.depositManager.deposit({
+            let depositTx = await hyphenSDK.depositManager.deposit({
                 sender: testConfig.defaultAccount,
                 receiver: testConfig.defaultAccount,
                 tokenAddress: testConfig.tokenAddress,
@@ -99,12 +101,42 @@ describe('deposit transaction cross-chain', () => {
             expect(depositTx?.hash).toHaveLength(66);
 
             // Wait for 1 block confirmation
-            await depositTx?.wait(1);
-        }
-        catch (error) {
-            console.error(error);
-        }
+            await depositTx?.wait(5);
+        });
+    });
+
+    describe('get transfer fees for cross-chain deposit transaction', () => {
+        it('should successfully get the transfer fees', async () => {
+            const request: GetTransferFeeRequest = {
+                fromChainId: testConfig.mumbaiID,
+                toChainId: testConfig.goerliID,
+                tokenAddress: testConfig.tokenAddress,
+                amount: testConfig.depositAmountWei,
+            };
+
+            const response = await hyphenSDK.depositManager.getTransferFee(request);
+
+            expect(response.code).toBe(RESPONSE_CODES.SUCCESS);
+
+            expect(Number(response.netTransferFee))
+                .toBe(
+                    Number(response.transferFee) - Number(response.reward)
+                );
+        });
+
+        it('should fail get the fees due to insufficient liquidity', async () => {
+            const request: GetTransferFeeRequest = {
+                fromChainId: testConfig.mumbaiID,
+                toChainId: testConfig.goerliID,
+                tokenAddress: testConfig.tokenAddress,
+                amount: "99999999999999999999999999999999999999999999999999",
+            };
+
+            const response = await hyphenSDK.depositManager.getTransferFee(request);
+
+            expect(response.code).toBe(RESPONSE_CODES.NO_LIQUIDITY);
+            expect(response.responseCode).toBe(RESPONSE_CODES.EXPECTATION_FAILED);
+        });
     });
 
 });
-

@@ -1,4 +1,4 @@
-import { RequestMethod, restAPI } from "../utils/network";
+import { RequestMethod, makeHttpRequest } from "../utils/network";
 import { Configuration, RESPONSE_CODES } from "../config";
 import { formatMessage } from "../util";
 import { log } from "../logs";
@@ -70,7 +70,7 @@ export class TokenManager extends ContractManager {
     };
 
     try {
-      const supportedTokensResponse = await restAPI(getTokenRequest);
+      const supportedTokensResponse = await makeHttpRequest(getTokenRequest);
       if (supportedTokensResponse && supportedTokensResponse.supportedPairList) {
         log.info(supportedTokensResponse.supportedPairList);
         return supportedTokensResponse.supportedPairList;

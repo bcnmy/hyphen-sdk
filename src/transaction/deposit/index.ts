@@ -4,8 +4,15 @@ import { formatMessage } from "../../util";
 import { Configuration, EXIT_STATUS, RESPONSE_CODES } from "../../config";
 import { log } from "../../logs";
 import { TransactionManager, TransactionResponse, Transaction } from "..";
-import { CheckStatusRequest, CheckStatusResponse, Environment, ExitResponse } from "../../types";
-import { RequestMethod, restAPI } from "../../utils/network";
+import {
+  CheckStatusRequest,
+  CheckStatusResponse,
+  Environment,
+  ExitResponse,
+  GetTransferFeeRequest,
+  GetTransferFeeResponse
+} from "../../types";
+import { RequestMethod, makeHttpRequest } from "../../utils/network";
 
 export type CheckDepositStatusRequest = {
   depositHash: string;
@@ -128,7 +135,7 @@ export class DepositManager extends TransactionManager {
     }
   };
 
-  async checkDepositStatus(depositRequest: CheckDepositStatusRequest) {
+  checkDepositStatus = async (depositRequest: CheckDepositStatusRequest) => {
     if (!depositRequest || !depositRequest.depositHash || !depositRequest.fromChainId) {
       return formatMessage(
         RESPONSE_CODES.BAD_REQUEST,
@@ -145,11 +152,11 @@ export class DepositManager extends TransactionManager {
       path: this.config.checkTransferStatusPath,
       queryParams: queryParamMap,
     };
-    const response = await restAPI(checkTransferStatusRequest);
+    const response = await makeHttpRequest(checkTransferStatusRequest);
     return response;
   }
 
-  async listenForExitTransaction(transaction: TransactionResponse, fromChainId: number) {
+  listenForExitTransaction = async (transaction: TransactionResponse, fromChainId: number) => {
     if (this.onFundsTransfered) {
       const interval = this.transferCheckInterval || this.config.defaultExitCheckInterval;
       await transaction.wait(1);
@@ -194,6 +201,37 @@ export class DepositManager extends TransactionManager {
       path: this.config.checkRequestStatusPath,
       body,
     };
-    return await restAPI(preDepositStatusRequest);
+    return await makeHttpRequest(preDepositStatusRequest);
   };
+
+  /**
+    * Returns the transfer fee for a given token and amount.
+    * 
+    * @param request - The object containing the request parameters
+    * @returns The breakdown of the transfer fees
+    * 
+    * @see: {@link https://docs.biconomy.io/products/hyphen-instant-cross-chain-transfers/apis#transfer-fee|API docs}
+    * for more details
+    */
+  getTransferFee = async (request: GetTransferFeeRequest) => {
+    return new Promise<GetTransferFeeResponse>(async (resolve, reject) => {
+      if(request.fromChainId < 0 || request.toChainId < 0) {
+        reject("received invalid chain id");
+      }
+
+      const queryParamMap = new Map();
+      queryParamMap.set("fromChainId", request.fromChainId);
+      queryParamMap.set("toChainId", request.toChainId);
+      queryParamMap.set("tokenAddress", request.tokenAddress);
+      queryParamMap.set("amount", request.amount);
+
+      const response = await makeHttpRequest({
+        method: RequestMethod.GET,
+        baseURL: this.config.getHyphenBaseURL(this.environment),
+        path: this.config.getTransferFeePath,
+        queryParams: queryParamMap
+      });
+      resolve(response);
+    });
+  }
 }

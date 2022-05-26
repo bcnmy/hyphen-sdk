@@ -1,0 +1,1 @@
+The mocks are solely intended for unit tests. E2E tests located in [test/e2e](../e2e/) do not test against mocks but instead with real, running systems and libraries.

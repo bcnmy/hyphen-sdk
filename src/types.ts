@@ -31,6 +31,12 @@ export type Config = {
   NATIVE_ADDRESS: string;
 };
 
+type BaseResponse = {
+  code: number;
+  message: string;
+  responseCode?: number;
+};
+
 export type CheckStatusRequest = {
   tokenAddress: string;
   amount: BigNumberish;
@@ -39,9 +45,7 @@ export type CheckStatusRequest = {
   userAddress: string;
 };
 
-export type CheckStatusResponse = {
-  code: number;
-  message: string;
+export type CheckStatusResponse = BaseResponse & {
   allowanceGiven: boolean;
   currentAllowance: string;
   depositContract: string;
@@ -86,10 +90,6 @@ export type FetchOption = {
   headers: any;
 };
 
-export type FetchCall =
-  | ((input: RequestInfo, init?: RequestInit | undefined) => Promise<Response>)
-  | ((arg0: string, arg1: FetchOption) => Promise<any>);
-
 export type ExitRequest = {
   sender: string;
   receiver: string;
@@ -99,9 +99,7 @@ export type ExitRequest = {
   toChainId?: string;
 };
 
-export type ExitResponse = {
-  code: number;
-  message: string;
+export type ExitResponse = BaseResponse & {
   statusCode: number;
   fromChainId: number;
   toChainId: number;
@@ -196,3 +194,19 @@ export type Token = Modify<
 >;
 
 export type TokenConfigurationResponse = Token[];
+
+export type GetTransferFeeRequest = {
+  fromChainId: number;
+  toChainId: number;
+  tokenAddress: string;
+  amount: BigNumberish;
+};
+
+export type GetTransferFeeResponse = BaseResponse & {
+  gasFee: string, // Gas fee in USDC on destination chain e.g. "0.966"
+  transferFee: string, // LP Fee in UDSC on destination chain e.g. "0.10009509"
+  transferFeePercentage: string, // Percentage LP fee eg. "0.10009509"
+  reward: string, // Reward in USDC if available on source chain e.g. "0"
+  netTransferFee: string, // Final Net Transfer Fee (transferFee + gasFee - reward) e.g. "1.06609509"
+  amountToGet: string // Approximate amount to get on destination chain (Amount deposited - netTransferFee) e.g. "98.93390491"
+};

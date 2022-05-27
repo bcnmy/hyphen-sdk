@@ -1,6 +1,6 @@
 import { RESPONSE_CODES } from "../config";
 import { formatMessage } from "../util";
-import { RequestMethod, restAPI } from "../utils/network";
+import { RequestMethod, makeHttpRequest } from "../utils/network";
 import type { Configuration } from "../config";
 import type { Environment } from "../types";
 
@@ -32,7 +32,7 @@ export class LiquidityPools {
             path: this.config.getPoolInfoPath,
             queryParams: queryParamMap
         }
-        const response = await restAPI(checkTransferStatusRequest);
+        const response = await makeHttpRequest(checkTransferStatusRequest);
         return response;
     }
 }

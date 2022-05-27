@@ -1,15 +1,6 @@
-import { FetchCall } from "../../types";
+import fetch from "cross-fetch";
 
-import NodeFetch from "node-fetch";
-
-let _fetch: FetchCall;
-if (typeof window === "undefined") {
-  _fetch = NodeFetch;
-} else {
-  _fetch = fetch;
-}
-
-export type RESTAPI_PARAMS = {
+export type REQUEST_PARAMS = {
   method: RequestMethod;
   baseURL: string;
   path: string;
@@ -37,12 +28,14 @@ const getFetchOptions = (method: string) => {
   };
 };
 
-export function restAPI(params: RESTAPI_PARAMS): Promise<any | void> {
+export function makeHttpRequest(params: REQUEST_PARAMS): Promise<any | void> {
   return new Promise(async (resolve, reject) => {
+
     const fetchOptions: FetchOption = getFetchOptions(params.method);
     if (params.method === RequestMethod.POST) {
       fetchOptions.body = JSON.stringify(params.body);
     }
+
     const queryParamsArray = [];
     let queryParamString = "";
     if (params.queryParams) {
@@ -51,9 +44,10 @@ export function restAPI(params: RESTAPI_PARAMS): Promise<any | void> {
       }
       queryParamString = queryParamsArray.join("&");
     }
-    _fetch(`${params.baseURL}${params.path}?${queryParamString}`, fetchOptions)
-      .then((response) => {
-        if (response.headers.get("content-type").includes("application/json")) {
+
+    fetch(`${params.baseURL}${params.path}?${queryParamString}`, fetchOptions)
+      .then((response: Response) => {
+        if (response.headers.get("content-type")!.includes("application/json")) {
           return response.json();
         } else {
           return response.text();
@@ -65,5 +59,6 @@ export function restAPI(params: RESTAPI_PARAMS): Promise<any | void> {
       .catch((error) => {
         reject(error);
       });
+
   });
 }

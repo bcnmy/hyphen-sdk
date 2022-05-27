@@ -1,7 +1,7 @@
 import { Configuration, RESPONSE_CODES } from "../../config";
 import { Environment } from "../../types";
 import { formatMessage } from "../../util";
-import { RequestMethod, restAPI } from "../../utils/network";
+import { RequestMethod, makeHttpRequest } from "../../utils/network";
 
 export type ManualExitResponse = {
     code: number,
@@ -33,7 +33,7 @@ export class TransferManager {
             baseURL: this.config.getHyphenBaseURL(this.environment),
             path: this.config.getManualTransferPath,
         }
-        const response = await restAPI(triggerManualTransferRequest);
+        const response = await makeHttpRequest(triggerManualTransferRequest);
         return response;
     }
 }

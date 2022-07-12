@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import dotenv from "dotenv";
 import path from "path";
 import { Hyphen, RESPONSE_CODES } from "../../src/hyphen";
-import { GetTransferFeeRequest } from "../../src/types";
+import { GetTransferFeeRequest, GasTokenDistributionRequest } from "../../src/types";
 
 dotenv.config({ path: path.resolve(__dirname, './.env') });
 
@@ -136,6 +136,36 @@ describe('deposit manager e2e tests', () => {
 
             expect(response.code).toBe(RESPONSE_CODES.NO_LIQUIDITY);
             expect(response.responseCode).toBe(RESPONSE_CODES.EXPECTATION_FAILED);
+        });
+    });
+
+    describe('Get GasToken Distribution', () => {
+        it('should successfully get GasToken Distribution', async () => {
+            const request: GasTokenDistributionRequest = {
+                fromChainId: 5,
+                fromChainTokenAddress: "0x64ef393b6846114bad71e2cb2ccc3e10736b5716",
+                amount: "100000"
+            };
+
+            const response = await hyphenSDK.depositManager.getGasTokenDistribution(request);
+
+            expect(response.code).toBe(RESPONSE_CODES.SUCCESS);
+            expect(response.message).toBe("GasTokenDistribution calculated successfully");
+
+        });
+
+        it('should fail for wrong chainId', async () => {
+            const request: GasTokenDistributionRequest = {
+                fromChainId: 999,
+                fromChainTokenAddress: "0x64ef393b6846114bad71e2cb2ccc3e10736b5716",
+                amount: "100000"
+            };0
+
+            const response = await hyphenSDK.depositManager.getGasTokenDistribution(request);
+
+            expect(response.code).toBe(RESPONSE_CODES.ERROR_RESPONSE);
+            expect(response.message).toBe("No network configuration found for chainId: 999");
+            expect(response.responseCode).toBe(RESPONSE_CODES.ERROR_RESPONSE);
         });
     });
 

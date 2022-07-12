@@ -10,7 +10,8 @@ import {
   Environment,
   ExitResponse,
   GetTransferFeeRequest,
-  GetTransferFeeResponse
+  GetTransferFeeResponse,
+  GasTokenDistributionRequest
 } from "../../types";
 import { RequestMethod, makeHttpRequest } from "../../utils/network";
 
@@ -213,6 +214,28 @@ export class DepositManager extends TransactionManager {
   * @see: {@link https://docs.biconomy.io/products/hyphen-instant-cross-chain-transfers/apis#transfer-fee|API docs}
   * for more details
   */
+
+  getGasTokenDistribution = async (request: GasTokenDistributionRequest) => {
+    return new Promise<GetTransferFeeResponse>(async (resolve, reject) => {
+      if (request.fromChainId < 0 ) {
+        reject("received invalid fromChainId");
+      }
+
+      const queryParamMap = new Map();
+      queryParamMap.set("fromChainId", request.fromChainId);
+      queryParamMap.set("fromChainTokenAddress", request.fromChainTokenAddress);
+      queryParamMap.set("amount", request.amount);
+
+      const response = await makeHttpRequest({
+        method: RequestMethod.GET,
+        baseURL: this.config.getHyphenBaseURL(this.environment),
+        path: this.config.getGasTokenDistributionPath,
+        queryParams: queryParamMap
+      });
+      resolve(response);
+    });
+  }
+
   getTransferFee = async (request: GetTransferFeeRequest) => {
     return new Promise<GetTransferFeeResponse>(async (resolve, reject) => {
       if (request.fromChainId < 0 || request.toChainId < 0) {

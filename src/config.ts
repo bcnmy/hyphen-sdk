@@ -149,6 +149,7 @@ class Configuration implements Config {
   tokenConfigurationPath = "/api/v1/configuration/tokens";
   networkConfigurationPath = "/api/v1/configuration/networks";
   getTransferFeePath = "/api/v1/data/transferFee";
+  getGasTokenDistributionPath = "/api/v1/insta-exit/gas-token-distribution";
 
   // ABI
   liquidityPoolManagerABI = LIQUIDITY_POOL_MANAGER_ABI;

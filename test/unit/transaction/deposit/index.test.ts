@@ -1,7 +1,7 @@
 import { Configuration, RESPONSE_CODES } from "../../../../src/config";
 import { DepositManager, DepositManagerParams } from "../../../../src/transaction/deposit/index";
 import { HyphenProvider } from "../../../../src/providers";
-import { GetTransferFeeRequest, GetTransferFeeResponse } from "../../../../src/types";
+import { GetTransferFeeRequest, GetTransferFeeResponse, GasTokenDistributionRequest, GasTokenDistributionResponse } from "../../../../src/types";
 import * as networkUtils from "../../../../src/utils/network";
 
 import { MockEthersProvider } from "../../mocks/provider";
@@ -68,4 +68,43 @@ describe("deposit manager unit tests", () => {
         }
     });
 
+    it("should successully able to get the gasToken Distribution", async () => {
+        const request: GasTokenDistributionRequest = {
+            fromChainId: 5,
+            fromChainTokenAddress: "0x64ef393b6846114bad71e2cb2ccc3e10736b5716",
+            amount: "100000"
+        };
+
+        const mockedSuccessMessage = "GasTokenDistribution calculated successfull";
+        const mockResponse: GasTokenDistributionResponse = {
+            code: 200,
+            message: mockedSuccessMessage,
+	        responseCode: 200,
+	        gasTokenPercentage: 2.423995995995996
+        };
+
+        const makeHttpRequestMock = jest.spyOn(networkUtils, "makeHttpRequest").mockResolvedValue(mockResponse);
+
+        const response = await depositManager.getGasTokenDistribution(request);
+
+        expect(makeHttpRequestMock).toHaveBeenCalledTimes;
+
+        expect(response.code).toEqual(RESPONSE_CODES.SUCCESS);
+        expect(response.message).toEqual(mockedSuccessMessage);
+        
+    });
+
+    it("should fail to get the gasToken Distribution: Invalid fromChainId", async () => {
+        try {
+            const request: GasTokenDistributionRequest = {
+                fromChainId: -123,
+                fromChainTokenAddress: "0xabc",
+                amount: "1234567890",
+            };
+
+            await depositManager.getGasTokenDistribution(request);
+        } catch (err) {
+            expect(err).toEqual("received invalid fromChainId");
+        }
+    });
 });

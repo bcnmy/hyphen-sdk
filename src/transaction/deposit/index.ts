@@ -30,6 +30,7 @@ export type DepositRequest = {
   toChainId: string;
   useBiconomy: boolean;
   dAppName: string;
+  tag?: string;
 };
 
 export type DepositManagerParams = {
@@ -101,6 +102,11 @@ export class DepositManager extends TransactionManager {
 
       let txData;
       let value = "0x0";
+
+      if(request.tag && !request.dAppName){
+        request.dAppName = request.tag;
+      }
+      
       if (this.config.isNativeAddress(request.tokenAddress)) {
         const { data } = await lpManager.populateTransaction.depositNative(
           request.receiver,

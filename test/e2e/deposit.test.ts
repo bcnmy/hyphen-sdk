@@ -143,8 +143,8 @@ describe('deposit manager e2e tests', () => {
         it('should successfully get GasToken Distribution', async () => {
             const request: GasTokenDistributionRequest = {
                 fromChainId: 5,
-                fromChainTokenAddress: "0x64ef393b6846114bad71e2cb2ccc3e10736b5716",
-                amount: "100000"
+                fromChainTokenAddress: testConfig.tokenAddress,
+                amount: "1000000000000000000000"
             };
 
             const response = await hyphenSDK.depositManager.getGasTokenDistribution(request);
@@ -157,9 +157,9 @@ describe('deposit manager e2e tests', () => {
         it('should fail for wrong chainId', async () => {
             const request: GasTokenDistributionRequest = {
                 fromChainId: 999,
-                fromChainTokenAddress: "0x64ef393b6846114bad71e2cb2ccc3e10736b5716",
-                amount: "100000"
-            };0
+                fromChainTokenAddress: testConfig.tokenAddress,
+                amount: "1000000000000000000000"
+            }
 
             const response = await hyphenSDK.depositManager.getGasTokenDistribution(request);
 

@@ -1,4 +1,4 @@
-import { BigNumber, ethers, Wallet } from "ethers";
+import { BigNumber, Bytes, ethers, Wallet } from "ethers";
 import { HyphenProvider } from "../../providers";
 import { formatMessage } from "../../util";
 import { Configuration, EXIT_STATUS, RESPONSE_CODES } from "../../config";
@@ -31,6 +31,28 @@ export type DepositRequest = {
   useBiconomy: boolean;
   dAppName: string;
   tag?: string;
+};
+
+export type SwapRequest = {
+  tokenAddress: string;
+  percentage: number;
+  amount: string;
+  operation: number;
+  path: Bytes;
+}
+
+export type DepositAndSwapRequest = {
+  sender: string;
+  receiver: string;
+  tokenAddress: string;
+  depositContractAddress: string;
+  amount: string;
+  fromChainId: string;
+  toChainId: string;
+  useBiconomy: boolean;
+  dAppName: string;
+  tag?: string;
+  swapRequest: SwapRequest[];
 };
 
 export type DepositManagerParams = {
@@ -91,6 +113,35 @@ export class DepositManager extends TransactionManager {
     }
   };
 
+  depositAndSwap = async (request: DepositAndSwapRequest, wallet?: Wallet): Promise<TransactionResponse | undefined> => {
+    const provider = this.hyphenProvider.getProvider(request.useBiconomy);
+    if (this.config.isNativeAddress(request.tokenAddress)) {
+      const depositTransaction = await this._depositTokensToLPAndSwap(request, wallet);
+      if (depositTransaction) {
+        await this.listenForExitTransaction(depositTransaction, parseInt(request.fromChainId, 10));
+      }
+      return depositTransaction;
+    } else {
+      const tokenContract = new ethers.Contract(request.tokenAddress, this.config.erc20TokenABI, provider);
+      const allowance = await tokenContract.allowance(request.sender, request.depositContractAddress);
+      log.info(`Allowance given to LiquidityPoolManager is ${allowance}`);
+      if (BigNumber.from(request.amount).lte(allowance)) {
+        const depositTransaction = await this._depositTokensToLPAndSwap(request, wallet);
+        if (depositTransaction) {
+          await this.listenForExitTransaction(depositTransaction, parseInt(request.fromChainId, 10));
+        }
+        return depositTransaction;
+      } else {
+        return Promise.reject(
+          formatMessage(
+            RESPONSE_CODES.ALLOWANCE_NOT_GIVEN,
+            `Not enough allowance given to Liquidity Pool Manager contract`
+          )
+        );
+      }
+    }
+  };
+
   _depositTokensToLiquidityPoolManager = async (request: DepositRequest, wallet?: Wallet) => {
     try {
       const provider = this.hyphenProvider.getProvider(request.useBiconomy);
@@ -122,6 +173,59 @@ export class DepositManager extends TransactionManager {
           request.receiver,
           request.amount,
           request.dAppName
+        );
+        txData = data;
+      }
+
+      const txParams: Transaction = {
+        data: txData,
+        to: request.depositContractAddress,
+        from: request.sender,
+        value,
+      };
+      if (this.signatureType) {
+        txParams.signatureType = this.signatureType;
+      }
+
+      return this.sendTransaction(provider, txParams, wallet);
+    } catch (error) {
+      log.error(JSON.stringify(error));
+    }
+  };
+
+  _depositTokensToLPAndSwap = async (request: DepositAndSwapRequest, wallet?: Wallet) => {
+    try {
+      const provider = this.hyphenProvider.getProvider(request.useBiconomy);
+      const lpManager = new ethers.Contract(
+        request.depositContractAddress,
+        this.config.liquidityPoolManagerABI,
+        provider
+      );
+
+      let txData;
+      let value = "0x0";
+
+      if(request.tag && !request.dAppName){
+        request.dAppName = request.tag;
+      }
+      
+      if (this.config.isNativeAddress(request.tokenAddress)) {
+        const { data } = await lpManager.populateTransaction.depositNativeAndSwap(
+          request.receiver,
+          request.toChainId,
+          request.dAppName,
+          request.swapRequest
+        );
+        txData = data;
+        value = ethers.utils.hexValue(ethers.BigNumber.from(request.amount));
+      } else {
+        const { data } = await lpManager.populateTransaction.depositAndSwapErc20(
+          request.tokenAddress,
+          request.receiver,
+          request.toChainId,
+          request.amount,
+          request.dAppName,
+          request.swapRequest
         );
         txData = data;
       }
@@ -195,6 +299,7 @@ export class DepositManager extends TransactionManager {
   }
 
   preDepositStatus = async (checkStatusRequest: CheckStatusRequest): Promise<CheckStatusResponse> => {
+    console.log(checkStatusRequest);
     const body = {
       tokenAddress: checkStatusRequest.tokenAddress,
       amount: checkStatusRequest.amount,

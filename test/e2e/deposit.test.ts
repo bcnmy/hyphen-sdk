@@ -17,6 +17,7 @@ describe('deposit manager e2e tests', () => {
         testConfig.providerURLMumbai = process.env.PROVIDER_URL_MUMBAI;
         testConfig.providerGoerli = new ethers.providers.JsonRpcProvider(testConfig.providerURLGoerli);
         testConfig.providerMumbai = new ethers.providers.JsonRpcProvider(testConfig.providerURLMumbai);
+        testConfig.optimismWethAddress = process.env.OP_WETH_ADDRESS;
 
         testConfig.privateKey = process.env.PRIVATE_KEY!;
         testConfig.wallet = new ethers.Wallet(testConfig.privateKey);
@@ -25,6 +26,7 @@ describe('deposit manager e2e tests', () => {
 
         testConfig.mumbaiID = process.env.MUMBAI_CHAIN_ID!;
         testConfig.goerliID = process.env.GOERLI_CHAIN_ID!;
+        testConfig.kovanOptimismID = process.env.KOVAN_OP_CHAIN_ID!;
         testConfig.tokenAddressMumbai = process.env.TOKEN_ADDRESS_MUMBAI!;
         testConfig.tokenAddressGoerli = process.env.TOKEN_ADDRESS_GOERLI!;
         testConfig.lpContractAddressGoerli = process.env.LIQUIDITY_POOL_CONTRACT_ADDRESS_GOERLI!;
@@ -197,6 +199,67 @@ describe('deposit manager e2e tests', () => {
             expect(response.code).toBe(RESPONSE_CODES.ERROR_RESPONSE);
             expect(response.message).toBe("No network configuration found for chainId: 999");
             expect(response.responseCode).toBe(RESPONSE_CODES.ERROR_RESPONSE);
+        });
+    });
+
+    describe('deposit and swap transaction cross-chain', () => {
+        it('should transfer USDC and swapData from Goerli to kovanOptimism', async () => {
+            // check and approve USDT tokens
+
+            let preTransferStatus = await hyphenSDKGoerli.depositManager.preDepositStatus({
+                tokenAddress: testConfig.tokenAddressGoerli, // Token address on fromChain which needs to be transferred
+                amount: testConfig.lpAllowanceAmountWei, // Amount of tokens to be transferred in smallest unit eg wei
+                fromChainId: Number(testConfig.goerliID), // Chain id from where tokens needs to be transferred
+                toChainId: Number(testConfig.kovanOptimismID), // Chain id where tokens are supposed to be sent
+                userAddress: testConfig.defaultAccount // User wallet address who want's to do the transfer
+            });
+
+            if (preTransferStatus.code === RESPONSE_CODES.ALLOWANCE_NOT_GIVEN) {
+                // ❌ Not enough apporval from user address on LiquidityPoolManager contract on fromChain
+                let approveTx = await hyphenSDKGoerli.tokens.approveERC20(
+                    testConfig.tokenAddressGoerli,
+                    testConfig.lpContractAddressGoerli,
+                    testConfig.lpAllowanceAmountWei, // 1000 USDT
+                    testConfig.defaultAccount,
+                    false,
+                    false,
+                    testConfig.wallet
+                );
+                console.log(approveTx?.hash);
+                expect(approveTx?.hash).toHaveLength(66);
+
+                // ⏱Wait for the transaction to confirm, pass a number of blocks to wait as param
+                await approveTx?.wait(5);
+
+                // NOTE: Whenever there is a transaction done via SDK, all responses
+                // will be ethers.js compatible with an async wait() function that
+                // can be called with 'await' to wait for transaction confirmation.
+            }
+
+            let depositTx = await hyphenSDKGoerli.depositManager.depositAndSwap({
+                sender: testConfig.defaultAccount,
+                receiver: testConfig.defaultAccount,
+                tokenAddress: testConfig.tokenAddressGoerli,
+                depositContractAddress: testConfig.lpContractAddressGoerli,
+                amount: testConfig.depositAmountWei,
+                fromChainId: testConfig.goerliID,
+                toChainId: testConfig.kovanOptimismID,
+                useBiconomy: false,
+                dAppName: "test",
+                swapRequest: [{
+                    tokenAddress: testConfig.optimismWethAddress,
+                    amount: "0",
+                    percentage:200000000,
+                    operation: 0,
+                    path: "0x0000000000000000000000000000000000000000",
+                }],
+            }, testConfig.wallet);
+
+            console.log(depositTx?.hash);
+            expect(depositTx?.hash).toHaveLength(66);
+
+            // Wait for 1 block confirmation
+            await depositTx?.wait(1);
         });
     });
 

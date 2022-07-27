@@ -38,7 +38,7 @@ export type SwapRequest = {
   percentage: number;
   amount: string;
   operation: number;
-  path: Bytes;
+  path: string;
 }
 
 export type DepositAndSwapRequest = {
@@ -157,7 +157,7 @@ export class DepositManager extends TransactionManager {
       if(request.tag && !request.dAppName){
         request.dAppName = request.tag;
       }
-      
+
       if (this.config.isNativeAddress(request.tokenAddress)) {
         const { data } = await lpManager.populateTransaction.depositNative(
           request.receiver,
@@ -208,7 +208,7 @@ export class DepositManager extends TransactionManager {
       if(request.tag && !request.dAppName){
         request.dAppName = request.tag;
       }
-      
+
       if (this.config.isNativeAddress(request.tokenAddress)) {
         const { data } = await lpManager.populateTransaction.depositNativeAndSwap(
           request.receiver,
@@ -299,7 +299,6 @@ export class DepositManager extends TransactionManager {
   }
 
   preDepositStatus = async (checkStatusRequest: CheckStatusRequest): Promise<CheckStatusResponse> => {
-    console.log(checkStatusRequest);
     const body = {
       tokenAddress: checkStatusRequest.tokenAddress,
       amount: checkStatusRequest.amount,

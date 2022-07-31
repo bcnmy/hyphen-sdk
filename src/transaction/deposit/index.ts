@@ -14,6 +14,7 @@ import {
   GasTokenDistributionRequest
 } from "../../types";
 import { RequestMethod, makeHttpRequest } from "../../utils/network";
+import { TokenManager } from "../../tokens";
 
 export type CheckDepositStatusRequest = {
   depositHash: string;
@@ -72,6 +73,7 @@ export class DepositManager extends TransactionManager {
   environment?: Environment;
   depositTransactionListenerMap: Map<string, any>;
   config: Configuration;
+  tokenManager: TokenManager;
 
   constructor(params: DepositManagerParams) {
     super();
@@ -82,6 +84,12 @@ export class DepositManager extends TransactionManager {
     this.environment = params.environment;
     this.config = params.config;
     this.depositTransactionListenerMap = new Map();
+    this.tokenManager = new TokenManager({
+      environment: params.environment || "prod",
+      provider: this.hyphenProvider,
+      infiniteApproval: false,
+      config: this.config
+    });
   }
 
   deposit = async (request: DepositRequest, wallet?: Wallet): Promise<TransactionResponse | undefined> => {
@@ -113,8 +121,7 @@ export class DepositManager extends TransactionManager {
     }
   };
 
-  depositAndSwap = async (request: DepositAndSwapRequest, wallet?: Wallet): Promise<TransactionResponse | undefined> => {
-    const provider = this.hyphenProvider.getProvider(request.useBiconomy);
+  depositAndSwap = async (request: DepositAndSwapRequest, wallet?: Wallet): Promise<TransactionResponse | undefined> => {    
     if (this.config.isNativeAddress(request.tokenAddress)) {
       const depositTransaction = await this._depositTokensToLPAndSwap(request, wallet);
       if (depositTransaction) {
@@ -122,8 +129,7 @@ export class DepositManager extends TransactionManager {
       }
       return depositTransaction;
     } else {
-      const tokenContract = new ethers.Contract(request.tokenAddress, this.config.erc20TokenABI, provider);
-      const allowance = await tokenContract.allowance(request.sender, request.depositContractAddress);
+      const allowance = await this.tokenManager.getERC20Allowance(request.tokenAddress, request.sender, request.depositContractAddress);
       log.info(`Allowance given to LiquidityPoolManager is ${allowance}`);
       if (BigNumber.from(request.amount).lte(allowance)) {
         const depositTransaction = await this._depositTokensToLPAndSwap(request, wallet);

@@ -259,8 +259,8 @@ describe('deposit manager e2e tests', () => {
             expect(depositTx?.hash).toHaveLength(66);
 
             // Wait for 1 block confirmation
-            await depositTx?.wait(1);
+            let confirmation = await depositTx?.wait(1);
+            expect(confirmation?.status).toBe("0x1"); 
         });
     });
-
 });

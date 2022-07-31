@@ -111,7 +111,7 @@ describe("deposit manager unit tests", () => {
         }
     });
 
-    it("should successfully deposit Swap request", async () => {
+    it("should successfully deposit Swap request- Erc20", async () => {
 
         const dummyTxHash = "0x88E3aB861416b3711E7ECa29c840be607499A474";
         const request: DepositAndSwapRequest = {

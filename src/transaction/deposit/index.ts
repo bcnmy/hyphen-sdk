@@ -1,4 +1,4 @@
-import { BigNumber, ethers, Wallet } from "ethers";
+import { BigNumber, Bytes, ethers, Wallet } from "ethers";
 import { HyphenProvider } from "../../providers";
 import { formatMessage } from "../../util";
 import { Configuration, EXIT_STATUS, RESPONSE_CODES } from "../../config";
@@ -14,6 +14,7 @@ import {
   GasTokenDistributionRequest
 } from "../../types";
 import { RequestMethod, makeHttpRequest } from "../../utils/network";
+import { TokenManager } from "../../tokens";
 
 export type CheckDepositStatusRequest = {
   depositHash: string;
@@ -33,6 +34,28 @@ export type DepositRequest = {
   tag?: string;
 };
 
+export type SwapRequest = {
+  tokenAddress: string;
+  percentage: number;
+  amount: string;
+  operation: number;
+  path: string;
+}
+
+export type DepositAndSwapRequest = {
+  sender: string;
+  receiver: string;
+  tokenAddress: string;
+  depositContractAddress: string;
+  amount: string;
+  fromChainId: string;
+  toChainId: string;
+  useBiconomy: boolean;
+  dAppName: string;
+  tag?: string;
+  swapRequest: SwapRequest[];
+};
+
 export type DepositManagerParams = {
   provider: HyphenProvider;
   signatureType?: string;
@@ -50,6 +73,7 @@ export class DepositManager extends TransactionManager {
   environment?: Environment;
   depositTransactionListenerMap: Map<string, any>;
   config: Configuration;
+  tokenManager: TokenManager;
 
   constructor(params: DepositManagerParams) {
     super();
@@ -60,6 +84,12 @@ export class DepositManager extends TransactionManager {
     this.environment = params.environment;
     this.config = params.config;
     this.depositTransactionListenerMap = new Map();
+    this.tokenManager = new TokenManager({
+      environment: params.environment || "prod",
+      provider: this.hyphenProvider,
+      infiniteApproval: false,
+      config: this.config
+    });
   }
 
   deposit = async (request: DepositRequest, wallet?: Wallet): Promise<TransactionResponse | undefined> => {
@@ -91,6 +121,33 @@ export class DepositManager extends TransactionManager {
     }
   };
 
+  depositAndSwap = async (request: DepositAndSwapRequest, wallet?: Wallet): Promise<TransactionResponse | undefined> => {    
+    if (this.config.isNativeAddress(request.tokenAddress)) {
+      const depositTransaction = await this._depositTokensToLPAndSwap(request, wallet);
+      if (depositTransaction) {
+        await this.listenForExitTransaction(depositTransaction, parseInt(request.fromChainId, 10));
+      }
+      return depositTransaction;
+    } else {
+      const allowance = await this.tokenManager.getERC20Allowance(request.tokenAddress, request.sender, request.depositContractAddress);
+      log.info(`Allowance given to LiquidityPoolManager is ${allowance}`);
+      if (BigNumber.from(request.amount).lte(allowance)) {
+        const depositTransaction = await this._depositTokensToLPAndSwap(request, wallet);
+        if (depositTransaction) {
+          await this.listenForExitTransaction(depositTransaction, parseInt(request.fromChainId, 10));
+        }
+        return depositTransaction;
+      } else {
+        return Promise.reject(
+          formatMessage(
+            RESPONSE_CODES.ALLOWANCE_NOT_GIVEN,
+            `Not enough allowance given to Liquidity Pool Manager contract`
+          )
+        );
+      }
+    }
+  };
+
   _depositTokensToLiquidityPoolManager = async (request: DepositRequest, wallet?: Wallet) => {
     try {
       const provider = this.hyphenProvider.getProvider(request.useBiconomy);
@@ -106,7 +163,7 @@ export class DepositManager extends TransactionManager {
       if(request.tag && !request.dAppName){
         request.dAppName = request.tag;
       }
-      
+
       if (this.config.isNativeAddress(request.tokenAddress)) {
         const { data } = await lpManager.populateTransaction.depositNative(
           request.receiver,
@@ -122,6 +179,59 @@ export class DepositManager extends TransactionManager {
           request.receiver,
           request.amount,
           request.dAppName
+        );
+        txData = data;
+      }
+
+      const txParams: Transaction = {
+        data: txData,
+        to: request.depositContractAddress,
+        from: request.sender,
+        value,
+      };
+      if (this.signatureType) {
+        txParams.signatureType = this.signatureType;
+      }
+
+      return this.sendTransaction(provider, txParams, wallet);
+    } catch (error) {
+      log.error(JSON.stringify(error));
+    }
+  };
+
+  _depositTokensToLPAndSwap = async (request: DepositAndSwapRequest, wallet?: Wallet) => {
+    try {
+      const provider = this.hyphenProvider.getProvider(request.useBiconomy);
+      const lpManager = new ethers.Contract(
+        request.depositContractAddress,
+        this.config.liquidityPoolManagerABI,
+        provider
+      );
+
+      let txData;
+      let value = "0x0";
+
+      if(request.tag && !request.dAppName){
+        request.dAppName = request.tag;
+      }
+
+      if (this.config.isNativeAddress(request.tokenAddress)) {
+        const { data } = await lpManager.populateTransaction.depositNativeAndSwap(
+          request.receiver,
+          request.toChainId,
+          request.dAppName,
+          request.swapRequest
+        );
+        txData = data;
+        value = ethers.utils.hexValue(ethers.BigNumber.from(request.amount));
+      } else {
+        const { data } = await lpManager.populateTransaction.depositAndSwapErc20(
+          request.tokenAddress,
+          request.receiver,
+          request.toChainId,
+          request.amount,
+          request.dAppName,
+          request.swapRequest
         );
         txData = data;
       }

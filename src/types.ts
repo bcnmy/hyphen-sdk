@@ -202,6 +202,16 @@ export type GetTransferFeeRequest = {
   amount: BigNumberish;
 };
 
+export type GasTokenDistributionRequest = {
+  fromChainId: number;
+  fromChainTokenAddress: string;
+  amount: BigNumberish;
+};
+export type GasTokenDistributionResponse = BaseResponse & {
+  responseCode: number;
+  gasTokenPercentage: BigNumberish;
+};
+
 export type GetTransferFeeResponse = BaseResponse & {
   gasFee: string, // Gas fee in USDC on destination chain e.g. "0.966"
   transferFee: string, // LP Fee in UDSC on destination chain e.g. "0.10009509"

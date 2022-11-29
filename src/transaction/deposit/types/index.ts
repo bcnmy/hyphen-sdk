@@ -82,14 +82,12 @@ export type HyperlaneArgs = {
 
 export type DepositAndCallParams = DepositRequest & {
   payloads: CCMPMessagePayloadType[];
-  gasFeePaymentArgs: GasFeePaymentArgs;
   minAmount?: BigNumberish;
 } & (WormholeArgs | AxelarArgs | HyperlaneArgs);
 
 export type DepositAndCallFeeRequest = GetTransferFeeRequest & {
   receiver: string;
   payloads: CCMPMessagePayloadType[];
-  gasFeePaymentArgs: GasFeePaymentArgs;
   minAmount?: BigNumberish;
 } & (WormholeArgs | AxelarArgs | HyperlaneArgs);
 
@@ -126,6 +124,6 @@ export type DepositAndCallCheckStatusResponseType = {
   sourceTransactionStatus?: CrossChainTransationStatus;
   destinationTransactionStatus?: TransactionStatus;
   error?: CrossChainTransactionError;
-  desttinationChainTxHash?: string;
+  destinationChainTxHash?: string;
   context: any;
 };

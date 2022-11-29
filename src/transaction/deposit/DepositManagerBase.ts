@@ -55,20 +55,24 @@ export abstract class DepositManagerBase<ExitResponseType> extends TransactionMa
       let invocationCount = 0;
       const intervalId = setInterval(async () => {
         const depositHash = transaction.hash;
-        const response = await this.checkDepositStatus({ depositHash, fromChainId });
-        invocationCount++;
-        const { exitHashGenerated, processed } = await this.validateCheckStatusResponse(response);
-        if (exitHashGenerated && this.onFundsTransfered) {
-          await this.onFundsTransfered(response);
-        }
-        if (processed) {
-          clearInterval(this.depositTransactionListenerMap.get(depositHash));
-          this.depositTransactionListenerMap.delete(depositHash);
-        }
-        if (invocationCount >= this.config.maxDepositCheckCallbackCount) {
-          log.info(`Max callback count reached ${this.config.maxDepositCheckCallbackCount}. Clearing interval now`);
-          clearInterval(this.depositTransactionListenerMap.get(depositHash));
-          this.depositTransactionListenerMap.delete(depositHash);
+        try {
+          const response = await this.checkDepositStatus({ depositHash, fromChainId });
+          invocationCount++;
+          const { exitHashGenerated, processed } = await this.validateCheckStatusResponse(response);
+          if (exitHashGenerated && this.onFundsTransfered) {
+            await this.onFundsTransfered(response);
+          }
+          if (processed) {
+            clearInterval(this.depositTransactionListenerMap.get(depositHash));
+            this.depositTransactionListenerMap.delete(depositHash);
+          }
+          if (invocationCount >= this.config.maxDepositCheckCallbackCount) {
+            log.info(`Max callback count reached ${this.config.maxDepositCheckCallbackCount}. Clearing interval now`);
+            clearInterval(this.depositTransactionListenerMap.get(depositHash));
+            this.depositTransactionListenerMap.delete(depositHash);
+          }
+        } catch (e) {
+          log.error(`Error while listening for exit transaction ${e instanceof Error ? e.message : JSON.stringify(e)}`);
         }
       }, interval);
       this.depositTransactionListenerMap.set(transaction.hash, intervalId);

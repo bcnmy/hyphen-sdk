@@ -1,4 +1,4 @@
-import { BigNumberish, ethers, Wallet } from 'ethers';
+import { BigNumber, BigNumberish, ethers, Wallet } from 'ethers';
 import {
   CheckDepositStatusRequest,
   DepositAndCallCheckStatusResponseType,
@@ -6,6 +6,7 @@ import {
   DepositAndCallParams,
   DepositAndCallTransferFeeResponse,
   DepositManagerParams,
+  GasFeePaymentArgs,
   TransactionStatus,
 } from './types';
 import { log } from '../../logs';
@@ -42,7 +43,10 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     return [];
   };
 
-  #executeDepositAndCall = async (request: DepositAndCallParams, wallet?: Wallet) => {
+  #executeDepositAndCall = async (
+    request: DepositAndCallParams & { gasFeePaymentArgs: GasFeePaymentArgs },
+    wallet?: Wallet
+  ) => {
     try {
       const provider = this.hyphenProvider.getProvider(request.useBiconomy);
       const lpManager = this._getLiquidityPoolManagerInstance(request);
@@ -50,15 +54,16 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
       let value: BigNumberish = '0x0';
 
       if (this.config.isNativeAddress(request.tokenAddress)) {
-        value = ethers.BigNumber.from(request.amount).add(request.gasFeePaymentArgs.feeAmount);
+        value = ethers.BigNumber.from(request.amount);
       }
+      const transferredAmount = ethers.BigNumber.from(request.amount).sub(request.gasFeePaymentArgs.feeAmount);
 
       const calldata = lpManager.interface.encodeFunctionData('depositAndCall', [
         {
           toChainId: request.toChainId,
           tokenAddress: request.tokenAddress,
           receiver: request.receiver,
-          amount: request.amount,
+          amount: transferredAmount,
           tag: request.tag || request.dAppName,
           payloads: request.payloads,
           gasFeePaymentArgs: request.gasFeePaymentArgs,
@@ -72,7 +77,7 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
         data: calldata,
         to: request.depositContractAddress,
         from: request.sender,
-        value: ethers.utils.hexlify(value),
+        value: ethers.utils.hexValue(value),
       };
 
       if (this.signatureType) {
@@ -86,12 +91,33 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
   };
 
   depositAndCall = async (request: DepositAndCallParams, wallet?: Wallet) => {
-    const provider = this.hyphenProvider.getProvider(request.useBiconomy);
-    if (request.gasFeePaymentArgs.feeTokenAddress !== request.tokenAddress) {
-      throw new Error('Fee token address should be same as token address');
+    // Estimate gas fee and generate gas fee payment args
+    const gasFeeInWei = await this.getGasFee({
+      ...request,
+      fromChainId: parseInt(request.fromChainId, 10),
+      toChainId: parseInt(request.toChainId, 10),
+    });
+    if (!gasFeeInWei || BigNumber.from(gasFeeInWei).eq(0)) {
+      throw new Error(`Unknown error while fetching gas fee`);
     }
+    const gasFeePaymentArgs: GasFeePaymentArgs = {
+      feeTokenAddress: request.tokenAddress,
+      feeAmount: gasFeeInWei,
+      relayer: this.config.depositAndCallRefundReceiverAddress,
+    };
 
-    const totalAmount = ethers.BigNumber.from(request.amount).add(request.gasFeePaymentArgs.feeAmount);
+    const provider = this.hyphenProvider.getProvider(request.useBiconomy);
+
+    const amount = ethers.BigNumber.from(request.amount);
+    if (amount.lte(gasFeeInWei)) {
+      throw new Error(
+        `Amount should be greater than gas fee. Amount: ${amount.toString()}, Gas Fee: ${gasFeeInWei.toString()}`
+      );
+    }
+    const totalAmount = ethers.BigNumber.from(request.amount).sub(gasFeePaymentArgs.feeAmount);
+
+    log.info(`Gas Fee Payment Args: ${JSON.stringify(gasFeePaymentArgs)}`);
+    log.info(`Final Amount: ${totalAmount.toString()}`);
 
     // Check Allowance
     if (!this.config.isNativeAddress(request.tokenAddress)) {
@@ -113,7 +139,13 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
 
     // Execute Transaction
     log.info(`Executing depositAndCall transaction`);
-    const depositTransaction = await this.#executeDepositAndCall(request, wallet);
+    const depositTransaction = await this.#executeDepositAndCall(
+      {
+        ...request,
+        gasFeePaymentArgs,
+      },
+      wallet
+    );
     if (!depositTransaction) {
       throw new Error(`Deposit transaction failed`);
     }
@@ -154,7 +186,7 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     response: DepositAndCallCheckStatusResponseType
   ): Promise<{ exitHashGenerated: boolean; processed: boolean }> {
     return {
-      exitHashGenerated: !!response?.desttinationChainTxHash,
+      exitHashGenerated: !!response?.destinationChainTxHash,
       processed: response?.destinationTransactionStatus === TransactionStatus.SUCCESS,
     };
   }

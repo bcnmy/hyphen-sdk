@@ -159,6 +159,9 @@ class Configuration implements Config {
   getTransferFeePath = "/api/v1/data/transferFee";
   getGasTokenDistributionPath = "/api/v1/insta-exit/gas-token-distribution";
 
+  // TODO: Update
+  depositAndCallRefundReceiverAddress = "0x0000000000000000000000000000000000000001";
+
   // ABI
   liquidityPoolManagerABI = LIQUIDITY_POOL_MANAGER_ABI;
   erc20TokenABI = ERC20_ABI;

@@ -1,1450 +1,1362 @@
 export default [
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "asset",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'asset',
+        type: 'address',
       },
       {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        indexed: true,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
       },
       {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "transferredAmount",
-        "type": "uint256"
+        indexed: true,
+        internalType: 'uint256',
+        name: 'transferredAmount',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "target",
-        "type": "address"
+        indexed: false,
+        internalType: 'address',
+        name: 'target',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "bytes",
-        "name": "depositHash",
-        "type": "bytes"
+        indexed: false,
+        internalType: 'bytes',
+        name: 'depositHash',
+        type: 'bytes',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "fromChainId",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'fromChainId',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "lpFee",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'lpFee',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "transferFee",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'transferFee',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "gasFee",
-        "type": "uint256"
-      }
+        indexed: false,
+        internalType: 'uint256',
+        name: 'gasFee',
+        type: 'uint256',
+      },
     ],
-    "name": "AssetSent",
-    "type": "event"
+    name: 'AssetSent',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "baseGas",
-        "type": "uint256"
-      }
+        indexed: true,
+        internalType: 'address',
+        name: 'asset',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'transferredAmount',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'target',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'fromChainId',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'lpFee',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'transferFee',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'gasFee',
+        type: 'uint256',
+      },
     ],
-    "name": "BaseGasUpdated",
-    "type": "event"
+    name: 'AssetSentFromCCMP',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'from',
+        type: 'address',
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "toChainId",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'toChainId',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "reward",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'reward',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "string",
-        "name": "tag",
-        "type": "string"
-      }
+        indexed: false,
+        internalType: 'string',
+        name: 'tag',
+        type: 'string',
+      },
     ],
-    "name": "Deposit",
-    "type": "event"
+    name: 'Deposit',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'from',
+        type: 'address',
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "toChainId",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'reward',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "reward",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'string',
+        name: 'tag',
+        type: 'string',
+      },
+    ],
+    name: 'DepositAndCall',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'from',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "string",
-        "name": "tag",
-        "type": "string"
+        indexed: true,
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
       },
       {
-        "components": [
+        indexed: true,
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'toChainId',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'reward',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'tag',
+        type: 'string',
+      },
+      {
+        components: [
           {
-            "internalType": "address",
-            "name": "tokenAddress",
-            "type": "address"
+            internalType: 'address',
+            name: 'tokenAddress',
+            type: 'address',
           },
           {
-            "internalType": "uint256",
-            "name": "percentage",
-            "type": "uint256"
+            internalType: 'uint256',
+            name: 'percentage',
+            type: 'uint256',
           },
           {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
           },
           {
-            "internalType": "enum SwapOperation",
-            "name": "operation",
-            "type": "uint8"
+            internalType: 'enum SwapOperation',
+            name: 'operation',
+            type: 'uint8',
           },
           {
-            "internalType": "bytes",
-            "name": "path",
-            "type": "bytes"
-          }
+            internalType: 'bytes',
+            name: 'path',
+            type: 'bytes',
+          },
         ],
-        "indexed": false,
-        "internalType": "struct SwapRequest[]",
-        "name": "swapRequests",
-        "type": "tuple[]"
-      }
+        indexed: false,
+        internalType: 'struct SwapRequest[]',
+        name: 'swapRequests',
+        type: 'tuple[]',
+      },
     ],
-    "name": "DepositAndSwap",
-    "type": "event"
+    name: 'DepositAndSwap',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'previousOwner',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        indexed: true,
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
     ],
-    "name": "EthReceived",
-    "type": "event"
+    name: 'OwnershipTransferred',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "gasUsed",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
       },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "gasPrice",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "nativeTokenPriceInTransferredToken",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenGasBaseFee",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "gasFeeInTransferredToken",
-        "type": "uint256"
-      }
     ],
-    "name": "GasFeeCalculated",
-    "type": "event"
+    name: 'Paused',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'previousPauser',
+        type: 'address',
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'newPauser',
+        type: 'address',
       },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
     ],
-    "name": "GasFeeWithdraw",
-    "type": "event"
+    name: 'PauserChanged',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "liquidityProvidersAddress",
-        "type": "address"
-      }
+        indexed: true,
+        internalType: 'address',
+        name: '_tf',
+        type: 'address',
+      },
     ],
-    "name": "LiquidityProvidersChanged",
-    "type": "event"
+    name: 'TrustedForwarderChanged',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
+        indexed: false,
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
       },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
     ],
-    "name": "OwnershipTransferred",
-    "type": "event"
+    name: 'Unpaused',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    inputs: [],
+    name: 'baseGas',
+    outputs: [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
     ],
-    "name": "Paused",
-    "type": "event"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    inputs: [],
+    name: 'ccmpExecutor',
+    outputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousPauser",
-        "type": "address"
+        internalType: 'address',
+        name: '',
+        type: 'address',
       },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newPauser",
-        "type": "address"
-      }
     ],
-    "name": "PauserChanged",
-    "type": "event"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    inputs: [],
+    name: 'ccmpGateway',
+    outputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
+        internalType: 'address',
+        name: '',
+        type: 'address',
       },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
     ],
-    "name": "Received",
-    "type": "event"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
       },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "liquidityProvidersAddress",
-        "type": "address"
-      }
     ],
-    "name": "SwapAdaptorChanged",
-    "type": "event"
+    name: 'chainIdToLiquidityPoolAddress',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "tokenManagerAddress",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: 'newPauser',
+        type: 'address',
+      },
     ],
-    "name": "TokenManagerChanged",
-    "type": "event"
+    name: 'changePauser',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_tf",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+      {
+        internalType: 'address payable',
+        name: 'receiver',
+        type: 'address',
+      },
+      {
+        internalType: 'bytes',
+        name: 'depositHash',
+        type: 'bytes',
+      },
     ],
-    "name": "TrustedForwarderChanged",
-    "type": "event"
+    name: 'checkHashStatus',
+    outputs: [
+      {
+        internalType: 'bytes32',
+        name: 'hashSendTransaction',
+        type: 'bytes32',
+      },
+      {
+        internalType: 'bool',
+        name: 'status',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    inputs: [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "Unpaused",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "baseGas",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newPauser",
-        "type": "address"
-      }
-    ],
-    "name": "changePauser",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address payable",
-        "name": "receiver",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "depositHash",
-        "type": "bytes"
-      }
-    ],
-    "name": "checkHashStatus",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "hashSendTransaction",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bool",
-        "name": "status",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "toChainId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "tag",
-        "type": "string"
-      },
-      {
-        "components": [
+        components: [
           {
-            "internalType": "address",
-            "name": "tokenAddress",
-            "type": "address"
+            internalType: 'uint256',
+            name: 'toChainId',
+            type: 'uint256',
           },
           {
-            "internalType": "uint256",
-            "name": "percentage",
-            "type": "uint256"
+            internalType: 'address',
+            name: 'tokenAddress',
+            type: 'address',
           },
           {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
+            internalType: 'address',
+            name: 'receiver',
+            type: 'address',
           },
           {
-            "internalType": "enum SwapOperation",
-            "name": "operation",
-            "type": "uint8"
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
           },
           {
-            "internalType": "bytes",
-            "name": "path",
-            "type": "bytes"
-          }
+            internalType: 'string',
+            name: 'tag',
+            type: 'string',
+          },
+          {
+            components: [
+              {
+                internalType: 'address',
+                name: 'to',
+                type: 'address',
+              },
+              {
+                internalType: 'bytes',
+                name: '_calldata',
+                type: 'bytes',
+              },
+            ],
+            internalType: 'struct ICCMPGateway.CCMPMessagePayload[]',
+            name: 'payloads',
+            type: 'tuple[]',
+          },
+          {
+            components: [
+              {
+                internalType: 'address',
+                name: 'feeTokenAddress',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'feeAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'address',
+                name: 'relayer',
+                type: 'address',
+              },
+            ],
+            internalType: 'struct ICCMPGateway.GasFeePaymentArgs',
+            name: 'gasFeePaymentArgs',
+            type: 'tuple',
+          },
+          {
+            internalType: 'string',
+            name: 'adaptorName',
+            type: 'string',
+          },
+          {
+            internalType: 'bytes',
+            name: 'routerArgs',
+            type: 'bytes',
+          },
+          {
+            internalType: 'bytes[]',
+            name: 'hyphenArgs',
+            type: 'bytes[]',
+          },
         ],
-        "internalType": "struct SwapRequest[]",
-        "name": "swapRequest",
-        "type": "tuple[]"
-      }
+        internalType: 'struct DepositAndCallArgs',
+        name: 'args',
+        type: 'tuple',
+      },
     ],
-    "name": "depositAndSwapErc20",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'depositAndCall',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "toChainId",
-        "type": "uint256"
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
       },
       {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
       },
       {
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
+        internalType: 'uint256',
+        name: 'toChainId',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
       },
       {
-        "internalType": "string",
-        "name": "tag",
-        "type": "string"
-      }
-    ],
-    "name": "depositErc20",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
+        internalType: 'string',
+        name: 'tag',
+        type: 'string',
       },
       {
-        "internalType": "uint256",
-        "name": "toChainId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "tag",
-        "type": "string"
-      }
-    ],
-    "name": "depositNative",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "toChainId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "tag",
-        "type": "string"
-      },
-      {
-        "components": [
+        components: [
           {
-            "internalType": "address",
-            "name": "tokenAddress",
-            "type": "address"
+            internalType: 'address',
+            name: 'tokenAddress',
+            type: 'address',
           },
           {
-            "internalType": "uint256",
-            "name": "percentage",
-            "type": "uint256"
+            internalType: 'uint256',
+            name: 'percentage',
+            type: 'uint256',
           },
           {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
           },
           {
-            "internalType": "enum SwapOperation",
-            "name": "operation",
-            "type": "uint8"
+            internalType: 'enum SwapOperation',
+            name: 'operation',
+            type: 'uint8',
           },
           {
-            "internalType": "bytes",
-            "name": "path",
-            "type": "bytes"
-          }
+            internalType: 'bytes',
+            name: 'path',
+            type: 'bytes',
+          },
         ],
-        "internalType": "struct SwapRequest[]",
-        "name": "swapRequest",
-        "type": "tuple[]"
-      }
+        internalType: 'struct SwapRequest[]',
+        name: 'swapRequest',
+        type: 'tuple[]',
+      },
     ],
-    "name": "depositNativeAndSwap",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
+    name: 'depositAndSwapErc20',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
+        internalType: 'uint256',
+        name: 'toChainId',
+        type: 'uint256',
       },
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "gasFeeAccumulated",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "gasFeeAccumulatedByToken",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      }
-    ],
-    "name": "getCurrentLiquidity",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "currentLiquidity",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getExecutorManager",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
       },
       {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      }
-    ],
-    "name": "getRewardAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "rewardAmount",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "getTransferFee",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "incentivePool",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_executorManagerAddress",
-        "type": "address"
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
       },
       {
-        "internalType": "address",
-        "name": "_pauser",
-        "type": "address"
+        internalType: 'string',
+        name: 'tag',
+        type: 'string',
       },
-      {
-        "internalType": "address",
-        "name": "_trustedForwarder",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_tokenManager",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_liquidityProviders",
-        "type": "address"
-      }
     ],
-    "name": "initialize",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'depositErc20',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "pauser",
-        "type": "address"
-      }
-    ],
-    "name": "isPauser",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "forwarder",
-        "type": "address"
-      }
-    ],
-    "name": "isTrustedForwarder",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "liquidityProviders",
-    "outputs": [
-      {
-        "internalType": "contract ILiquidityProviders",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "pause",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "paused",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
       },
       {
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
+        internalType: 'uint256',
+        name: 'toChainId',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        internalType: 'string',
+        name: 'tag',
+        type: 'string',
+      },
+    ],
+    name: 'depositNative',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
       },
       {
-        "internalType": "uint256",
-        "name": "toChainId",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'toChainId',
+        type: 'uint256',
       },
       {
-        "components": [
+        internalType: 'string',
+        name: 'tag',
+        type: 'string',
+      },
+      {
+        components: [
           {
-            "internalType": "uint256",
-            "name": "nonce",
-            "type": "uint256"
+            internalType: 'address',
+            name: 'tokenAddress',
+            type: 'address',
           },
           {
-            "internalType": "uint256",
-            "name": "expiry",
-            "type": "uint256"
+            internalType: 'uint256',
+            name: 'percentage',
+            type: 'uint256',
           },
           {
-            "internalType": "bool",
-            "name": "allowed",
-            "type": "bool"
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
           },
           {
-            "internalType": "uint8",
-            "name": "v",
-            "type": "uint8"
+            internalType: 'enum SwapOperation',
+            name: 'operation',
+            type: 'uint8',
           },
           {
-            "internalType": "bytes32",
-            "name": "r",
-            "type": "bytes32"
+            internalType: 'bytes',
+            name: 'path',
+            type: 'bytes',
           },
-          {
-            "internalType": "bytes32",
-            "name": "s",
-            "type": "bytes32"
-          }
         ],
-        "internalType": "struct LiquidityPool.PermitRequest",
-        "name": "permitOptions",
-        "type": "tuple"
+        internalType: 'struct SwapRequest[]',
+        name: 'swapRequest',
+        type: 'tuple[]',
       },
-      {
-        "internalType": "string",
-        "name": "tag",
-        "type": "string"
-      }
     ],
-    "name": "permitAndDepositErc20",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'depositNativeAndSwap',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
+        internalType: 'address',
+        name: '',
+        type: 'address',
       },
       {
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'gasFeeAccumulated',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'gasFeeAccumulatedByToken',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
+      },
+    ],
+    name: 'getCurrentLiquidity',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: 'currentLiquidity',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
+      },
+    ],
+    name: 'getRewardAmount',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: 'rewardAmount',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
       },
       {
-        "internalType": "uint256",
-        "name": "toChainId",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+    ],
+    name: 'getTransferFee',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'incentivePool',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_executorManagerAddress',
+        type: 'address',
       },
       {
-        "components": [
+        internalType: 'address',
+        name: '_pauser',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_trustedForwarder',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_tokenManager',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_liquidityProviders',
+        type: 'address',
+      },
+    ],
+    name: 'initialize',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'pauser',
+        type: 'address',
+      },
+    ],
+    name: 'isPauser',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'forwarder',
+        type: 'address',
+      },
+    ],
+    name: 'isTrustedForwarder',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'liquidityProviders',
+    outputs: [
+      {
+        internalType: 'contract ILiquidityProviders',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'owner',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'pause',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'paused',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
+      },
+    ],
+    name: 'processedHash',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'renouncePauser',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        components: [
           {
-            "internalType": "uint256",
-            "name": "nonce",
-            "type": "uint256"
+            internalType: 'uint256',
+            name: 'tokenSymbol',
+            type: 'uint256',
           },
           {
-            "internalType": "uint256",
-            "name": "expiry",
-            "type": "uint256"
+            internalType: 'uint256',
+            name: 'sourceChainAmount',
+            type: 'uint256',
           },
           {
-            "internalType": "bool",
-            "name": "allowed",
-            "type": "bool"
+            internalType: 'uint256',
+            name: 'sourceChainDecimals',
+            type: 'uint256',
           },
           {
-            "internalType": "uint8",
-            "name": "v",
-            "type": "uint8"
+            internalType: 'address payable',
+            name: 'receiver',
+            type: 'address',
           },
           {
-            "internalType": "bytes32",
-            "name": "r",
-            "type": "bytes32"
+            internalType: 'bytes[]',
+            name: 'hyphenArgs',
+            type: 'bytes[]',
           },
-          {
-            "internalType": "bytes32",
-            "name": "s",
-            "type": "bytes32"
-          }
         ],
-        "internalType": "struct LiquidityPool.PermitRequest",
-        "name": "permitOptions",
-        "type": "tuple"
+        internalType: 'struct SendFundsToUserFromCCMPArgs',
+        name: 'args',
+        type: 'tuple',
       },
-      {
-        "internalType": "string",
-        "name": "tag",
-        "type": "string"
-      }
     ],
-    "name": "permitEIP2612AndDepositErc20",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'sendFundsToUserFromCCMP',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "processedHash",
-    "outputs": [
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
+      },
       {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+      {
+        internalType: 'address payable',
+        name: 'receiver',
+        type: 'address',
+      },
+      {
+        internalType: 'bytes',
+        name: 'depositHash',
+        type: 'bytes',
+      },
+      {
+        internalType: 'uint256',
+        name: 'nativeTokenPriceInTransferredToken',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'fromChainId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenGasBaseFee',
+        type: 'uint256',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    name: 'sendFundsToUserV2',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renouncePauser",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
+        internalType: 'address',
+        name: '_newCCMPExecutor',
+        type: 'address',
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        internalType: 'address',
+        name: '_newCCMPGateway',
+        type: 'address',
       },
-      {
-        "internalType": "address payable",
-        "name": "receiver",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "depositHash",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenGasPrice",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "fromChainId",
-        "type": "uint256"
-      }
     ],
-    "name": "sendFundsToUser",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'setCCMPContracts',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
+        internalType: 'address',
+        name: '_executorManagerAddress',
+        type: 'address',
       },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address payable",
-        "name": "receiver",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "depositHash",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint256",
-        "name": "nativeTokenPriceInTransferredToken",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "fromChainId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenGasBaseFee",
-        "type": "uint256"
-      }
     ],
-    "name": "sendFundsToUserV2",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'setExecutorManager',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint128",
-        "name": "gas",
-        "type": "uint128"
-      }
+        internalType: 'uint256[]',
+        name: 'chainId',
+        type: 'uint256[]',
+      },
+      {
+        internalType: 'address[]',
+        name: 'liquidityPoolAddress',
+        type: 'address[]',
+      },
     ],
-    "name": "setBaseGas",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'setLiquidityPoolAddress',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "_executorManagerAddress",
-        "type": "address"
-      }
+        internalType: 'string',
+        name: 'name',
+        type: 'string',
+      },
+      {
+        internalType: 'address',
+        name: '_swapAdaptor',
+        type: 'address',
+      },
     ],
-    "name": "setExecutorManager",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'setSwapAdaptor',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "_liquidityProviders",
-        "type": "address"
-      }
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
     ],
-    "name": "setLiquidityProviders",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'swapAdaptorMap',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
       },
       {
-        "internalType": "address",
-        "name": "_swapAdaptor",
-        "type": "address"
-      }
-    ],
-    "name": "setSwapAdaptor",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_tokenManager",
-        "type": "address"
-      }
-    ],
-    "name": "setTokenManager",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "trustedForwarder",
-        "type": "address"
-      }
-    ],
-    "name": "setTrustedForwarder",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "name": "swapAdaptorMap",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        internalType: 'address payable',
+        name: 'receiver',
+        type: 'address',
       },
       {
-        "internalType": "address payable",
-        "name": "receiver",
-        "type": "address"
+        internalType: 'bytes',
+        name: 'depositHash',
+        type: 'bytes',
       },
       {
-        "internalType": "bytes",
-        "name": "depositHash",
-        "type": "bytes"
+        internalType: 'uint256',
+        name: 'nativeTokenPriceInTransferredToken',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "nativeTokenPriceInTransferredToken",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'tokenGasBaseFee',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "tokenGasBaseFee",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'fromChainId',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "fromChainId",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'swapGasOverhead',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "swapGasOverhead",
-        "type": "uint256"
-      },
-      {
-        "components": [
+        components: [
           {
-            "internalType": "address",
-            "name": "tokenAddress",
-            "type": "address"
+            internalType: 'address',
+            name: 'tokenAddress',
+            type: 'address',
           },
           {
-            "internalType": "uint256",
-            "name": "percentage",
-            "type": "uint256"
+            internalType: 'uint256',
+            name: 'percentage',
+            type: 'uint256',
           },
           {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
           },
           {
-            "internalType": "enum SwapOperation",
-            "name": "operation",
-            "type": "uint8"
+            internalType: 'enum SwapOperation',
+            name: 'operation',
+            type: 'uint8',
           },
           {
-            "internalType": "bytes",
-            "name": "path",
-            "type": "bytes"
-          }
+            internalType: 'bytes',
+            name: 'path',
+            type: 'bytes',
+          },
         ],
-        "internalType": "struct SwapRequest[]",
-        "name": "swapRequests",
-        "type": "tuple[]"
+        internalType: 'struct SwapRequest[]',
+        name: 'swapRequests',
+        type: 'tuple[]',
       },
       {
-        "internalType": "string",
-        "name": "swapAdaptor",
-        "type": "string"
-      }
+        internalType: 'string',
+        name: 'swapAdaptor',
+        type: 'string',
+      },
     ],
-    "name": "swapAndSendFundsToUser",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'swapAndSendFundsToUser',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [],
-    "name": "tokenManager",
-    "outputs": [
+    inputs: [],
+    name: 'tokenManager',
+    outputs: [
       {
-        "internalType": "contract ITokenManager",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'contract ITokenManager',
+        name: '',
+        type: 'address',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
+        internalType: 'address',
+        name: '_tokenAddress',
+        type: 'address',
       },
       {
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
       },
       {
-        "internalType": "uint256",
-        "name": "_tokenAmount",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: '_tokenAmount',
+        type: 'uint256',
+      },
     ],
-    "name": "transfer",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'transfer',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
     ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [],
-    "name": "unpause",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    inputs: [],
+    name: 'unpause',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
+      },
     ],
-    "name": "withdrawErc20GasFee",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'withdrawErc20GasFee',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [],
-    "name": "withdrawNativeGasFee",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    inputs: [],
+    name: 'withdrawNativeGasFee',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "stateMutability": "payable",
-    "type": "receive"
-  }
+    stateMutability: 'payable',
+    type: 'receive',
+  },
 ];

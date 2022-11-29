@@ -140,12 +140,20 @@ class Configuration implements Config {
     staging: "https://hyphen-v2-staging-api.biconomy.io",
     prod: "https://hyphen-v2-api.biconomy.io",
   };
+  relayerBaseUrl = {
+    // TODO: Update
+    test: "http://localhost:3000",
+    staging: "http://localhost:3000",
+    prod: "http://localhost:3000",
+  };
   initiateExitPath = "/api/v1/insta-exit/initiate-exit";
   getSupportedTokensPath = "/api/v1/admin/supported-token/list";
   checkRequestStatusPath = "/api/v1/insta-exit/system-status";
   getPoolInfoPath = "/api/v1/insta-exit/get-pool-info";
   getManualTransferPath = "/api/v1/insta-exit/execute";
   checkTransferStatusPath = "/api/v1/insta-exit/check-status";
+  checkDepositAndCallStatusPath = "/api/v1/cross-chain/status/tx";
+  estimateDepositAndCallPath = "/api/v1/cross-chain/estimate/depositAndCall";
   tokenConfigurationPath = "/api/v1/configuration/tokens";
   networkConfigurationPath = "/api/v1/configuration/networks";
   getTransferFeePath = "/api/v1/data/transferFee";
@@ -284,6 +292,11 @@ class Configuration implements Config {
   getHyphenBaseURL(_environment?: Environment) {
     const environment = _environment || "prod";
     return this.hyphenBaseUrl[environment];
+  }
+
+  getRelayerBaseURL(_environment?: Environment) {
+    const environment = _environment || "prod";
+    return this.relayerBaseUrl[environment];
   }
 
   isNativeAddress(address: string): boolean {

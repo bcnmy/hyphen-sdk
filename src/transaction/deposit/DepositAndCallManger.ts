@@ -222,7 +222,7 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     queryParamMap.set('fromChainId', request.fromChainId);
     queryParamMap.set('toChainId', request.toChainId);
     queryParamMap.set('tokenAddress', request.tokenAddress);
-    queryParamMap.set('amount', request.amount);
+    queryParamMap.set('amount', request.amount.toString());
 
     const response = await makeHttpRequest({
       method: RequestMethod.GET,
@@ -240,6 +240,11 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     const gasFeeReadable = ethers.utils.formatUnits(gasFee, decimals);
     log.info(`Readable Gas fee for ${JSON.stringify(request)} is ${gasFeeReadable} $${request.tokenAddress}`);
     const { transferFee, transferFeePercentage, reward } = await this.getLiquidityPoolTransferFee(request);
+    log.info(`Response from getLiquidityPoolTransferFee is ${JSON.stringify({ transferFee, transferFeePercentage, reward })}}`)
+    if (!transferFee || !transferFeePercentage || !reward) {
+      throw new Error('Error fetching transfer fee from Hyphen');
+    }
+
     const netTransferFee = parseFloat(transferFee) + parseFloat(gasFeeReadable) - parseFloat(reward);
     const amountToGet = parseFloat(ethers.utils.formatUnits(request.amount, decimals)) - netTransferFee;
 

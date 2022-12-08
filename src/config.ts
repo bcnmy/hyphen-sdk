@@ -139,12 +139,13 @@ class Configuration implements Config {
     test: "https://hyphen-v2-integration-api.biconomy.io",
     staging: "https://hyphen-v2-staging-api.biconomy.io",
     prod: "https://hyphen-v2-api.biconomy.io",
+    local: "http://localhost:3001",
   };
   relayerBaseUrl = {
-    // TODO: Update
-    test: "http://localhost:3000",
-    staging: "http://localhost:3000",
-    prod: "http://localhost:3000",
+    test: "https://sdk-relayer.staging.biconomy.io/api/v1/relay",
+    staging: "https://sdk-relayer.staging.biconomy.io/api/v1/relay",
+    prod: "https://sdk-relayer.prod.biconomy.io",
+    local: "http://localhost:3000",
   };
   initiateExitPath = "/api/v1/insta-exit/initiate-exit";
   getSupportedTokensPath = "/api/v1/admin/supported-token/list";

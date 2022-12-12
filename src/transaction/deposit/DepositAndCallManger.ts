@@ -201,7 +201,7 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
       adaptorName: request.adaptorName,
       payloads: request.payloads,
     };
-    log.info(`Getting gas fee for ${JSON.stringify(params)}`);
+    log.info(`Getting gas fee..`);
     const response = await makeHttpRequest({
       method: RequestMethod.POST,
       baseURL: this.config.getRelayerBaseURL(this.environment),
@@ -209,7 +209,7 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
       body: params,
     });
     const gasFee = response.amountInWei;
-    log.info(`Gas fee for ${JSON.stringify(request)} is ${gasFee}`);
+    log.info(`Gas fee is ${gasFee}`);
     return gasFee;
   };
 

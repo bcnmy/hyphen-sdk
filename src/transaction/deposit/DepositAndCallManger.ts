@@ -5,6 +5,7 @@ import {
   DepositAndCallFeeRequest,
   DepositAndCallParams,
   DepositAndCallTransferFeeResponse,
+  DepositAndCallTxOptions,
   DepositManagerParams,
   GasFeePaymentArgs,
   TransactionStatus,
@@ -45,7 +46,8 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
 
   #executeDepositAndCall = async (
     request: DepositAndCallParams & { gasFeePaymentArgs: GasFeePaymentArgs },
-    wallet?: Wallet
+    wallet?: Wallet,
+    options?: DepositAndCallTxOptions
   ) => {
     try {
       const provider = this.hyphenProvider.getProvider(request.useBiconomy);
@@ -78,6 +80,8 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
         to: request.depositContractAddress,
         from: request.sender,
         value: ethers.utils.hexValue(value),
+        nonce: options?.nonce,
+        gasPrice: options?.gasPrice,
       };
 
       if (this.signatureType) {
@@ -90,7 +94,7 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     }
   };
 
-  depositAndCall = async (request: DepositAndCallParams, wallet?: Wallet) => {
+  depositAndCall = async (request: DepositAndCallParams, wallet?: Wallet, options?: DepositAndCallTxOptions) => {
     // Estimate gas fee and generate gas fee payment args
     const gasFeeInWei = await this.getGasFee({
       ...request,
@@ -144,7 +148,8 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
         ...request,
         gasFeePaymentArgs,
       },
-      wallet
+      wallet,
+      options
     );
     if (!depositTransaction) {
       throw new Error(`Deposit transaction failed`);
@@ -240,7 +245,9 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     const gasFeeReadable = ethers.utils.formatUnits(gasFee, decimals);
     log.info(`Readable Gas fee for ${JSON.stringify(request)} is ${gasFeeReadable} $${request.tokenAddress}`);
     const { transferFee, transferFeePercentage, reward } = await this.getLiquidityPoolTransferFee(request);
-    log.info(`Response from getLiquidityPoolTransferFee is ${JSON.stringify({ transferFee, transferFeePercentage, reward })}}`)
+    log.info(
+      `Response from getLiquidityPoolTransferFee is ${JSON.stringify({ transferFee, transferFeePercentage, reward })}}`
+    );
     if (!transferFee || !transferFeePercentage || !reward) {
       throw new Error('Error fetching transfer fee from Hyphen');
     }

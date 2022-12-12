@@ -1,7 +1,7 @@
-import { BigNumberish } from 'ethers';
-import { Configuration } from '../../../config';
+import type { BigNumberish, BigNumber } from 'ethers';
+import type { Configuration } from '../../../config';
 import type { HyphenProvider } from '../../../providers';
-import { CCMPAdaptor, Environment, ExitResponse, GetTransferFeeRequest, GetTransferFeeResponse } from '../../../types';
+import type { CCMPAdaptor, Environment, GetTransferFeeRequest, GetTransferFeeResponse } from '../../../types';
 
 export type CheckDepositStatusRequest = {
   depositHash: string;
@@ -126,4 +126,10 @@ export type DepositAndCallCheckStatusResponseType = {
   error?: CrossChainTransactionError;
   destinationChainTxHash?: string;
   context: any;
+};
+
+export type DepositAndCallTxOptions = {
+  gasLimit?: BigNumber;
+  gasPrice?: BigNumber;
+  nonce?: number;
 };

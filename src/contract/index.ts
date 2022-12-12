@@ -1,12 +1,11 @@
 import { Contract, ContractInterface, ethers } from "ethers";
-import { Provider } from "@ethersproject/abstract-provider";
 import { TransactionManager } from "../transaction";
 
 export type ContractParams = {
     networkId: number,
     address: string,
     abi: ContractInterface,
-    provider: Provider
+    provider: ethers.providers.Provider | ethers.Signer
 }
 
 export class ContractManager extends TransactionManager{

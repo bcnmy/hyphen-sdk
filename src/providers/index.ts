@@ -1,4 +1,3 @@
-import { Provider } from "@ethersproject/abstract-provider";
 import { ethers } from "ethers";
 import { log } from "../logs";
 
@@ -21,7 +20,7 @@ export type InternalBiconomyOption = {
 }
 
 export class HyphenProvider {
-    provider: Provider;
+    provider: ethers.providers.Provider;
     isBiconomyEnabled: boolean;
 
     constructor(params: ProviderParams) {

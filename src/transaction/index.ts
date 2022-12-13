@@ -35,7 +35,7 @@ export class TransactionManager {
             else {
                 const unsignedTx = rawTransaction;
 
-                unsignedTx.nonce = await _provider.getTransactionCount(wallet.address);
+                unsignedTx.nonce = unsignedTx.nonce || await _provider.getTransactionCount(wallet.address);
                 const { chainId } = await _provider.getNetwork();
                 unsignedTx.chainId = chainId;
                 unsignedTx.gasPrice = await _provider.getGasPrice();

@@ -97,6 +97,7 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
   depositAndCall = async (request: DepositAndCallParams, wallet?: Wallet, options?: DepositAndCallTxOptions) => {
     // TODO: Add validation for adaptor type based on chain id
     // TODO: Add functions for increasing gas fee
+    // TODO: Manual Exit
 
     // Estimate gas fee and generate gas fee payment args
     const gasFeeInWei = await this.getGasFee({

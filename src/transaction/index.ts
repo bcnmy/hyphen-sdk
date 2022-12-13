@@ -39,7 +39,8 @@ export class TransactionManager {
                 const { chainId } = await _provider.getNetwork();
                 unsignedTx.chainId = chainId;
                 unsignedTx.gasPrice = await _provider.getGasPrice();
-                unsignedTx.gasLimit = await _provider.estimateGas(unsignedTx);
+                // Send 1.5x gas limit
+                unsignedTx.gasLimit = (await _provider.estimateGas(unsignedTx)).mul(3).div(2);
 
                 const signedTx = await wallet.signTransaction(unsignedTx);
                 return this.sendSignedTransaction(_provider, signedTx)

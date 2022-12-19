@@ -139,13 +139,11 @@ class Configuration implements Config {
     test: "https://hyphen-v2-integration-api.biconomy.io",
     staging: "https://hyphen-v2-staging-api.biconomy.io",
     prod: "https://hyphen-v2-api.biconomy.io",
-    local: "http://localhost:3001",
   };
   relayerBaseUrl = {
     test: "https://sdk-relayer.staging.biconomy.io/api/v1/relay",
     staging: "https://sdk-relayer.staging.biconomy.io/api/v1/relay",
     prod: "https://sdk-relayer.prod.biconomy.io",
-    local: "http://localhost:3000",
   };
   initiateExitPath = "/api/v1/insta-exit/initiate-exit";
   getSupportedTokensPath = "/api/v1/admin/supported-token/list";
@@ -294,11 +292,17 @@ class Configuration implements Config {
   }
 
   getHyphenBaseURL(_environment?: Environment) {
+    if (process.env.HYPHEN_BASE_URL) {
+      return process.env.HYPHEN_BASE_URL;
+    }
     const environment = _environment || "prod";
     return this.hyphenBaseUrl[environment];
   }
 
   getRelayerBaseURL(_environment?: Environment) {
+    if (process.env.RELAYER_BASE_URL) {
+      return process.env.RELAYER_BASE_URL;
+    }
     const environment = _environment || "prod";
     return this.relayerBaseUrl[environment];
   }

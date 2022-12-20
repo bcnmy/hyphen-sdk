@@ -113,9 +113,6 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
       fromChainId: parseInt(request.fromChainId, 10),
       toChainId: parseInt(request.toChainId, 10),
     });
-    if (!gasFeeInWei || BigNumber.from(gasFeeInWei).eq(0)) {
-      throw new Error(`Unknown error while fetching gas fee`);
-    }
     const gasFeePaymentArgs: GasFeePaymentArgs = {
       feeTokenAddress: request.tokenAddress,
       feeAmount: gasFeeInWei,

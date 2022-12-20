@@ -72,7 +72,6 @@ export class TokenManager extends ContractManager {
     try {
       const supportedTokensResponse = await makeHttpRequest(getTokenRequest);
       if (supportedTokensResponse && supportedTokensResponse.supportedPairList) {
-        log.info(supportedTokensResponse.supportedPairList);
         return supportedTokensResponse.supportedPairList;
       } else {
         const error = formatMessage(RESPONSE_CODES.ERROR_RESPONSE, `Unable to get supported tokens`);

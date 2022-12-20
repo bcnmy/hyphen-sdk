@@ -58,7 +58,9 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
       if (this.config.isNativeAddress(request.tokenAddress)) {
         value = ethers.BigNumber.from(request.amount);
       }
-      const transferredAmount = ethers.BigNumber.from(request.amount).sub(request.gasFeePaymentArgs.feeAmount);
+      const transferredAmount = ethers.BigNumber.from(request.amount).sub(
+        request.gasFeePaymentArgs.feeAmount
+      );
 
       const calldata = lpManager.interface.encodeFunctionData('depositAndCall', [
         {
@@ -80,9 +82,11 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
         to: request.depositContractAddress,
         from: request.sender,
         value: ethers.utils.hexValue(value),
-        nonce: options?.nonce,
-        gasPrice: options?.gasPrice,
+        ...(options?.nonce && { nonce: options.nonce }),
+        ...(options?.gasPrice && { gasPrice: options.gasPrice }),
       };
+
+      console.log('txParams', txParams);
 
       if (this.signatureType) {
         txParams.signatureType = this.signatureType;
@@ -94,7 +98,11 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     }
   };
 
-  depositAndCall = async (request: DepositAndCallParams, wallet?: Wallet, options?: DepositAndCallTxOptions) => {
+  depositAndCall = async (
+    request: DepositAndCallParams,
+    wallet?: Wallet,
+    options?: DepositAndCallTxOptions
+  ) => {
     // TODO: Add validation for adaptor type based on chain id
     // TODO: Add functions for increasing gas fee
     // TODO: Manual Exit
@@ -130,8 +138,15 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     // Check Allowance
     if (!this.config.isNativeAddress(request.tokenAddress)) {
       log.info(`Checking allowance for ${request.tokenAddress}`);
-      const tokenContract = new ethers.Contract(request.tokenAddress, this.config.erc20TokenABI, provider);
-      const allowance = await tokenContract.allowance(request.sender, request.depositContractAddress);
+      const tokenContract = new ethers.Contract(
+        request.tokenAddress,
+        this.config.erc20TokenABI,
+        provider
+      );
+      const allowance = await tokenContract.allowance(
+        request.sender,
+        request.depositContractAddress
+      );
       log.info(`Allowance given to LiquidityPoolManager is ${allowance}`);
       if (allowance.lt(totalAmount)) {
         throw new Error(
@@ -187,7 +202,9 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
       path: this.config.checkDepositAndCallStatusPath,
       queryParams: queryParamMap,
     };
-    const response: DepositAndCallCheckStatusResponseType = await makeHttpRequest(checkTransferStatusRequest);
+    const response: DepositAndCallCheckStatusResponseType = await makeHttpRequest(
+      checkTransferStatusRequest
+    );
     return response;
   };
 
@@ -222,7 +239,9 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     return gasFee;
   };
 
-  getLiquidityPoolTransferFee = async (request: DepositAndCallFeeRequest): Promise<GetTransferFeeResponse> => {
+  getLiquidityPoolTransferFee = async (
+    request: DepositAndCallFeeRequest
+  ): Promise<GetTransferFeeResponse> => {
     if (request.fromChainId < 0 || request.toChainId < 0) {
       throw new Error('received invalid chain id');
     }
@@ -243,21 +262,35 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     return response;
   };
 
-  getTransferFee = async (request: DepositAndCallFeeRequest): Promise<DepositAndCallTransferFeeResponse> => {
+  getTransferFee = async (
+    request: DepositAndCallFeeRequest
+  ): Promise<DepositAndCallTransferFeeResponse> => {
     const gasFee = await this.getGasFee(request);
     const decimals = await this.tokenManager.getERC20TokenDecimals(request.tokenAddress);
     const gasFeeReadable = ethers.utils.formatUnits(gasFee, decimals);
-    log.info(`Readable Gas fee for ${JSON.stringify(request)} is ${gasFeeReadable} $${request.tokenAddress}`);
-    const { transferFee, transferFeePercentage, reward } = await this.getLiquidityPoolTransferFee(request);
     log.info(
-      `Response from getLiquidityPoolTransferFee is ${JSON.stringify({ transferFee, transferFeePercentage, reward })}}`
+      `Readable Gas fee for ${JSON.stringify(request)} is ${gasFeeReadable} $${
+        request.tokenAddress
+      }`
+    );
+    const { transferFee, transferFeePercentage, reward } = await this.getLiquidityPoolTransferFee(
+      request
+    );
+    log.info(
+      `Response from getLiquidityPoolTransferFee is ${JSON.stringify({
+        transferFee,
+        transferFeePercentage,
+        reward,
+      })}}`
     );
     if (!transferFee || !transferFeePercentage || !reward) {
       throw new Error('Error fetching transfer fee from Hyphen');
     }
 
-    const netTransferFee = parseFloat(transferFee) + parseFloat(gasFeeReadable) - parseFloat(reward);
-    const amountToGet = parseFloat(ethers.utils.formatUnits(request.amount, decimals)) - netTransferFee;
+    const netTransferFee =
+      parseFloat(transferFee) + parseFloat(gasFeeReadable) - parseFloat(reward);
+    const amountToGet =
+      parseFloat(ethers.utils.formatUnits(request.amount, decimals)) - netTransferFee;
 
     return {
       gasFee: gasFeeReadable,

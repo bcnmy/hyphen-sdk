@@ -38,7 +38,7 @@ export class TransactionManager {
                 unsignedTx.nonce = unsignedTx.nonce || await _provider.getTransactionCount(wallet.address);
                 const { chainId } = await _provider.getNetwork();
                 unsignedTx.chainId = chainId;
-                unsignedTx.gasPrice = await _provider.getGasPrice();
+                unsignedTx.gasPrice = unsignedTx.gasPrice || await _provider.getGasPrice();
                 // Send 1.5x gas limit
                 unsignedTx.gasLimit = (await _provider.estimateGas(unsignedTx)).mul(3).div(2);
 

@@ -1,7 +1,12 @@
 import type { BigNumberish, BigNumber } from 'ethers';
 import type { Configuration } from '../../../config';
 import type { HyphenProvider } from '../../../providers';
-import type { CCMPAdaptor, Environment, GetTransferFeeRequest, GetTransferFeeResponse } from '../../../types';
+import type {
+  CCMPAdaptor,
+  Environment,
+  GetTransferFeeRequest,
+  GetTransferFeeResponse,
+} from '../../../types';
 
 export type CheckDepositStatusRequest = {
   depositHash: string;
@@ -132,4 +137,9 @@ export type DepositAndCallTxOptions = {
   gasLimit?: BigNumber;
   gasPrice?: BigNumber;
   nonce?: number;
+};
+
+export type DepositAndCallManualTransferResponseType = {
+  code: number;
+  message: string;
 };

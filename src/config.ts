@@ -154,6 +154,7 @@ class Configuration implements Config {
   checkTransferStatusPath = '/api/v1/insta-exit/check-status';
   checkDepositAndCallStatusPath = '/api/v1/cross-chain/status/tx';
   supportedCCMPRoutersPath = '/api/v1/cross-chain/supported-routers';
+  depositAndCallProcessPath = '/api/v1/cross-chain/process/tx';
   estimateDepositAndCallPath = '/api/v1/cross-chain/estimate/depositAndCall';
   tokenConfigurationPath = '/api/v1/configuration/tokens';
   networkConfigurationPath = '/api/v1/configuration/networks';

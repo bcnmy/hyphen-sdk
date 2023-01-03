@@ -91,7 +91,7 @@ export type DepositAndCallFeeRequest = GetTransferFeeRequest & {
   minAmount?: BigNumberish;
 } & (WormholeArgs | AxelarArgs | HyperlaneArgs);
 
-export type DepositAndCallTransferFeeResponse = GetTransferFeeResponse & {};
+export type DepositAndCallTransferFeeResponse = GetTransferFeeResponse & { relayer: string };
 
 export enum CrossChainTransationStatus {
   __START = 'START',

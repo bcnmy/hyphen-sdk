@@ -98,17 +98,72 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     }
   };
 
+  #checkAllowance = async (
+    provider: ethers.providers.Provider,
+    sender: string,
+    tokenAddress: string,
+    totalAmount: BigNumberish,
+    depositContractAddress: string
+  ) => {
+    if (!this.config.isNativeAddress(tokenAddress)) {
+      log.info(`Checking allowance for ${tokenAddress}`);
+      const tokenContract = new ethers.Contract(tokenAddress, this.config.erc20TokenABI, provider);
+      const allowance = await tokenContract.allowance(sender, depositContractAddress);
+      log.info(`Allowance given to LiquidityPoolManager is ${allowance}`);
+      if (allowance.lt(totalAmount)) {
+        throw new Error(
+          JSON.stringify(
+            formatMessage(
+              RESPONSE_CODES.ALLOWANCE_NOT_GIVEN,
+              `Not enough allowance given to Liquidity Pool Manager contract`
+            )
+          )
+        );
+      }
+    }
+  };
+
+  #validate = async (
+    request: DepositAndCallParams,
+    wallet?: Wallet,
+    options?: DepositAndCallTxOptions
+  ) => {
+    const fromChainId = parseInt(request.fromChainId, 10);
+    if (!this.config.suportedRoutersMap[fromChainId].includes(request.adaptorName)) {
+      throw new Error(
+        JSON.stringify(
+          formatMessage(
+            RESPONSE_CODES.UNSUPPORTED_ROUTE,
+            `Adaptor ${request.adaptorName} not supported for chain id ${fromChainId}`
+          )
+        )
+      );
+    }
+
+    const toChainId = parseInt(request.toChainId, 10);
+    if (!this.config.suportedRoutersMap[toChainId].includes(request.adaptorName)) {
+      throw new Error(
+        JSON.stringify(
+          formatMessage(
+            RESPONSE_CODES.UNSUPPORTED_ROUTE,
+            `Adaptor ${request.adaptorName} not supported for chain id ${toChainId}`
+          )
+        )
+      );
+    }
+  };
+
   depositAndCall = async (
     request: DepositAndCallParams,
     wallet?: Wallet,
     options?: DepositAndCallTxOptions
   ) => {
-    // TODO: Add validation for adaptor type based on chain id
     // TODO: Add functions for increasing gas fee
     // TODO: Manual Exit
+    await this.#validate(request, wallet, options);
 
     // Estimate gas fee and generate gas fee payment args
-    const gasFeeInWei = await this.getGasFee({
+    const { gasFee: gasFeeInWei, relayer } = await this.getGasFee({
       ...request,
       fromChainId: parseInt(request.fromChainId, 10),
       toChainId: parseInt(request.toChainId, 10),
@@ -116,7 +171,7 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     const gasFeePaymentArgs: GasFeePaymentArgs = {
       feeTokenAddress: request.tokenAddress,
       feeAmount: gasFeeInWei,
-      relayer: this.config.depositAndCallRefundReceiverAddress,
+      relayer,
     };
 
     const provider = this.hyphenProvider.getProvider(request.useBiconomy);
@@ -133,29 +188,13 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     log.info(`Final Amount: ${totalAmount.toString()}`);
 
     // Check Allowance
-    if (!this.config.isNativeAddress(request.tokenAddress)) {
-      log.info(`Checking allowance for ${request.tokenAddress}`);
-      const tokenContract = new ethers.Contract(
-        request.tokenAddress,
-        this.config.erc20TokenABI,
-        provider
-      );
-      const allowance = await tokenContract.allowance(
-        request.sender,
-        request.depositContractAddress
-      );
-      log.info(`Allowance given to LiquidityPoolManager is ${allowance}`);
-      if (allowance.lt(totalAmount)) {
-        throw new Error(
-          JSON.stringify(
-            formatMessage(
-              RESPONSE_CODES.ALLOWANCE_NOT_GIVEN,
-              `Not enough allowance given to Liquidity Pool Manager contract`
-            )
-          )
-        );
-      }
-    }
+    await this.#checkAllowance(
+      provider,
+      request.sender,
+      request.tokenAddress,
+      totalAmount,
+      request.depositContractAddress
+    );
 
     // Execute Transaction
     log.info(`Executing depositAndCall transaction`);
@@ -214,7 +253,9 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     };
   }
 
-  getGasFee = async (request: DepositAndCallFeeRequest): Promise<string> => {
+  getGasFee = async (
+    request: DepositAndCallFeeRequest
+  ): Promise<{ gasFee: string; relayer: string }> => {
     const params = {
       fromChainId: request.fromChainId,
       toChainId: request.toChainId,
@@ -232,8 +273,9 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
       body: params,
     });
     const gasFee = response.amountInWei;
-    log.info(`Gas fee is ${gasFee}`);
-    return gasFee;
+    const relayer = response.relayer;
+    log.info(`Gas fee is ${gasFee}, refund receiver: ${relayer}`);
+    return { gasFee, relayer };
   };
 
   getLiquidityPoolTransferFee = async (
@@ -262,7 +304,7 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
   getTransferFee = async (
     request: DepositAndCallFeeRequest
   ): Promise<DepositAndCallTransferFeeResponse> => {
-    const gasFee = await this.getGasFee(request);
+    const { gasFee, relayer } = await this.getGasFee(request);
     const decimals = await this.tokenManager.getERC20TokenDecimals(request.tokenAddress);
     const gasFeeReadable = ethers.utils.formatUnits(gasFee, decimals);
     log.info(
@@ -291,6 +333,7 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
 
     return {
       gasFee: gasFeeReadable,
+      relayer,
       transferFee,
       transferFeePercentage,
       reward,

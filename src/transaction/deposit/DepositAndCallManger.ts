@@ -158,8 +158,6 @@ export class DepositAndCallManager extends DepositManagerBase<DepositAndCallChec
     wallet?: Wallet,
     options?: DepositAndCallTxOptions
   ) => {
-    // TODO: Add functions for increasing gas fee
-    // TODO: Manual Exit
     await this.#validate(request, wallet, options);
 
     // Estimate gas fee and generate gas fee payment args

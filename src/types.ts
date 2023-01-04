@@ -1,9 +1,16 @@
-import { Contract } from "@ethersproject/contracts";
-import { ContractInterface, BigNumberish } from "ethers";
+import { Contract } from '@ethersproject/contracts';
+import { ContractInterface, BigNumberish } from 'ethers';
+import { DepositAndCallCheckStatusResponseType } from './transaction/deposit';
 
 type Modify<T, R> = Omit<T, keyof R> & R;
 
-export type Environment = "test" | "staging" | "prod";
+export type Environment = 'test' | 'staging' | 'prod';
+
+export enum CCMPAdaptor {
+  WORMHOLE = 'wormhole',
+  AXELAR = 'axelar',
+  HYPERLANE = 'hyperlane',
+}
 
 export type Config = {
   hyphenBaseUrl: Record<Environment, string>;
@@ -68,6 +75,7 @@ export type Options = {
   infiniteApproval?: boolean;
   transferCheckInterval?: number; // Interval in milli seconds to check for transfer status
   onFundsTransfered?: (data: ExitResponse) => void;
+  onDepositAndCallFundsTransfered?: (data: DepositAndCallCheckStatusResponseType) => void;
   biconomy?: BiconomyOption;
   walletProvider?: object;
 };
@@ -213,10 +221,10 @@ export type GasTokenDistributionResponse = BaseResponse & {
 };
 
 export type GetTransferFeeResponse = BaseResponse & {
-  gasFee: string, // Gas fee in USDC on destination chain e.g. "0.966"
-  transferFee: string, // LP Fee in UDSC on destination chain e.g. "0.10009509"
-  transferFeePercentage: string, // Percentage LP fee eg. "0.10009509"
-  reward: string, // Reward in USDC if available on source chain e.g. "0"
-  netTransferFee: string, // Final Net Transfer Fee (transferFee + gasFee - reward) e.g. "1.06609509"
-  amountToGet: string // Approximate amount to get on destination chain (Amount deposited - netTransferFee) e.g. "98.93390491"
+  gasFee: string; // Gas fee in USDC on destination chain e.g. "0.966"
+  transferFee: string; // LP Fee in UDSC on destination chain e.g. "0.10009509"
+  transferFeePercentage: string; // Percentage LP fee eg. "0.10009509"
+  reward: string; // Reward in USDC if available on source chain e.g. "0"
+  netTransferFee: string; // Final Net Transfer Fee (transferFee + gasFee - reward) e.g. "1.06609509"
+  amountToGet: string; // Approximate amount to get on destination chain (Amount deposited - netTransferFee) e.g. "98.93390491"
 };

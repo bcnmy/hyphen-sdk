@@ -1,7 +1,7 @@
 import { Configuration, RESPONSE_CODES } from "../../../../src/config";
 import { DepositManager, DepositManagerParams, DepositAndSwapRequest } from "../../../../src/transaction/deposit/index";
 import { HyphenProvider } from "../../../../src/providers";
-import { GetTransferFeeRequest, GetTransferFeeResponse, GasTokenDistributionRequest, GasTokenDistributionResponse } from "../../../../src/types";
+import { GetTransferFeeRequest, GetTransferFeeResponse, GasTokenDistributionRequest, GasTokenDistributionResponse, ExitResponse } from "../../../../src/types";
 import * as networkUtils from "../../../../src/utils/network";
 import { BigNumber, ethers, Wallet } from "ethers";
 import { MockEthersProvider, MockEther } from "../../mocks/provider";
@@ -17,7 +17,7 @@ describe("deposit manager unit tests", () => {
             isBiconomyEnabled: false,
         });
 
-        const params: DepositManagerParams = {
+        const params: DepositManagerParams<ExitResponse> = {
             provider: hyphenProvider,
             config: new Configuration("test")
         };

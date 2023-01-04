@@ -3,17 +3,18 @@ import { BiconomyProviderParams } from "../providers";
 import { BiconomyProvider } from "../providers/biconomy";
 import { TokenManager } from "../tokens";
 import { ContractManager } from "../contract";
-import { DepositManager, DepositManagerParams } from "../transaction/deposit";
+import { DepositAndCallCheckStatusResponseType, DepositAndCallManager, DepositManager, DepositManagerParams } from "../transaction/deposit";
 import { LiquidityPools, LiquidityPoolsParams } from "../liquidity-pools";
 import { log } from "../logs";
 import { TransferManager, TransferManagerParams } from "../transaction/transfer";
-import type { Environment, Options, SupportedToken } from "../types";
+import type { Environment, ExitResponse, Options, SupportedToken } from "../types";
 
 class Hyphen {
     provider: BiconomyProvider;
     tokens: TokenManager;
     contracts: ContractManager;
     depositManager: DepositManager;
+    depositAndCallManager: DepositAndCallManager;
     transfer: TransferManager;
     liquidityPool: LiquidityPools;
     environment?: Environment;
@@ -52,7 +53,7 @@ class Hyphen {
         this.supportedTokens = new Map();
 
         // Deposit Manager Initialisation
-        const depositManagerParams: DepositManagerParams = {
+        const depositManagerParams: DepositManagerParams<ExitResponse> = {
             provider: this.provider,
             signatureType: options.signatureType,
             onFundsTransfered: options.onFundsTransfered,
@@ -61,6 +62,17 @@ class Hyphen {
             environment: this.environment
         }
         this.depositManager = new DepositManager(depositManagerParams);
+
+        // DepositAndCall Manager Initialisation
+        const depositAndCallManagerParams: DepositManagerParams<DepositAndCallCheckStatusResponseType> = {
+            provider: this.provider,
+            signatureType: options.signatureType,
+            onFundsTransfered: options.onDepositAndCallFundsTransfered,
+            transferCheckInterval: options.transferCheckInterval,
+            config: this.config,
+            environment: this.environment
+        }
+        this.depositAndCallManager = new DepositAndCallManager(depositAndCallManagerParams);
 
         // LiquidiyPools Initialisation
         const liquidityPoolManagerParams: LiquidityPoolsParams = {

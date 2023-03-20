@@ -20,11 +20,19 @@ export class BiconomyProvider extends HyphenProvider {
             this.biconomy = new Biconomy(this.provider, biconomyOptions);
             this.biconomyProvider = new ethers.providers.Web3Provider(this.biconomy);
         }
+        // if (params.walletProvider) {
+        //     if (isEthersProvider(params.walletProvider)) {
+        //         throw new Error("Wallet Provider in options can't be an ethers provider. Please pass the provider you get from your wallet directly.")
+        //     }
+        //     this.walletProvider = new ethers.providers.Web3Provider(params.walletProvider);
+        // }
+
         if (params.walletProvider) {
             if (isEthersProvider(params.walletProvider)) {
-                throw new Error("Wallet Provider in options can't be an ethers provider. Please pass the provider you get from your wallet directly.")
+                this.walletProvider = params.walletProvider;
+            } else {
+                this.walletProvider = new ethers.providers.Web3Provider(params.walletProvider);
             }
-            this.walletProvider = new ethers.providers.Web3Provider(params.walletProvider);
         }
     }
 
@@ -33,7 +41,7 @@ export class BiconomyProvider extends HyphenProvider {
     }
 
     getProvider(useBiconomy: boolean) {
-        if(useBiconomy) {
+        if (useBiconomy) {
             return this.biconomyProvider ? this.biconomyProvider : this.provider;
         } else {
             return this.provider;
@@ -42,7 +50,7 @@ export class BiconomyProvider extends HyphenProvider {
 
     getProviderWithAccounts = (useBiconomy: boolean) => {
         let result;
-        if(this.walletProvider) {
+        if (this.walletProvider) {
             result = this.walletProvider;
         } else {
             result = this.getProvider(useBiconomy);

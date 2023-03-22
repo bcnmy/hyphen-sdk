@@ -121,7 +121,7 @@ export class DepositManager extends TransactionManager {
     }
   };
 
-  depositAndSwap = async (request: DepositAndSwapRequest, wallet?: Wallet): Promise<TransactionResponse | undefined> => {    
+  depositAndSwap = async (request: DepositAndSwapRequest, wallet?: Wallet): Promise<TransactionResponse | undefined> => {
     if (this.config.isNativeAddress(request.tokenAddress)) {
       const depositTransaction = await this._depositTokensToLPAndSwap(request, wallet);
       if (depositTransaction) {
@@ -160,7 +160,7 @@ export class DepositManager extends TransactionManager {
       let txData;
       let value = "0x0";
 
-      if(request.tag && !request.dAppName){
+      if (request.tag && !request.dAppName) {
         request.dAppName = request.tag;
       }
 
@@ -211,7 +211,7 @@ export class DepositManager extends TransactionManager {
       let txData;
       let value = "0x0";
 
-      if(request.tag && !request.dAppName){
+      if (request.tag && !request.dAppName) {
         request.dAppName = request.tag;
       }
 
@@ -333,7 +333,7 @@ export class DepositManager extends TransactionManager {
 
   getGasTokenDistribution = async (request: GasTokenDistributionRequest) => {
     return new Promise<GetTransferFeeResponse>(async (resolve, reject) => {
-      if (request.fromChainId < 0 ) {
+      if (request.fromChainId < 0) {
         reject("received invalid fromChainId");
       }
 

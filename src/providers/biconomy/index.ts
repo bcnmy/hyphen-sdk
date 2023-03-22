@@ -12,27 +12,22 @@ export class BiconomyProvider extends HyphenProvider {
 
     constructor(params: BiconomyProviderParams) {
         super(params.providerParams);
-        if (params.enableBiconomy && params.biconomyOptions) {
-            const biconomyOptions = params.biconomyOptions;
-            if (biconomyOptions && params.walletProvider) {
-                biconomyOptions.walletProvider = params.walletProvider;
-            }
-            this.biconomy = new Biconomy(this.provider, biconomyOptions);
-            this.biconomyProvider = new ethers.providers.Web3Provider(this.biconomy);
-        }
-        // if (params.walletProvider) {
-        //     if (isEthersProvider(params.walletProvider)) {
-        //         throw new Error("Wallet Provider in options can't be an ethers provider. Please pass the provider you get from your wallet directly.")
-        //     }
-        //     this.walletProvider = new ethers.providers.Web3Provider(params.walletProvider);
-        // }
-
         if (params.walletProvider) {
             if (isEthersProvider(params.walletProvider)) {
                 this.walletProvider = params.walletProvider;
             } else {
                 this.walletProvider = new ethers.providers.Web3Provider(params.walletProvider);
             }
+        }
+
+
+        if (params.enableBiconomy && params.biconomyOptions) {
+            const biconomyOptions = params.biconomyOptions;
+            if (biconomyOptions && params.walletProvider) {
+                biconomyOptions.walletProvider = this.walletProvider;
+            }
+            this.biconomy = new Biconomy(this.provider, biconomyOptions);
+            this.biconomyProvider = new ethers.providers.Web3Provider(this.biconomy);
         }
     }
 

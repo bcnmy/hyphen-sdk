@@ -22,7 +22,7 @@ describe("deposit manager unit tests", () => {
             config: new Configuration("test")
         };
         depositManager = new DepositManager(params);
-        
+
         wallet = new MockEther().Wallet("0a308068097f54bb380363f9c607b2f2e4e651df82c4bd398331a2ea68028678");
     });
 
@@ -82,8 +82,8 @@ describe("deposit manager unit tests", () => {
         const mockResponse: GasTokenDistributionResponse = {
             code: 200,
             message: mockedSuccessMessage,
-	        responseCode: 200,
-	        gasTokenPercentage: 2.423995995995996
+            responseCode: 200,
+            gasTokenPercentage: 2.423995995995996
         };
 
         const makeHttpRequestMock = jest.spyOn(networkUtils, "makeHttpRequest").mockResolvedValue(mockResponse);
@@ -94,7 +94,7 @@ describe("deposit manager unit tests", () => {
 
         expect(response.code).toEqual(RESPONSE_CODES.SUCCESS);
         expect(response.message).toEqual(mockedSuccessMessage);
-        
+
     });
 
     it("should fail to get the gasToken Distribution: Invalid fromChainId", async () => {
@@ -138,34 +138,35 @@ describe("deposit manager unit tests", () => {
 
         // mock _depositTokensToLPAndSwap method
         jest.spyOn(depositManager, "_depositTokensToLPAndSwap").mockResolvedValue(
-            { hash:dummyTxHash, wait: (confirmations, ) => { 
-                return {
-                    to: "dummyAddress",
-                    from: "dummyAddress",
-                    contractAddress: "dummyAddress",
-                    transactionIndex: 0,
-                    root: "",
-                    gasUsed: BigNumber.from(0),
-                    logsBloom: "dummyLogs",
-                    blockHash: "dummyBlockHash",
-                    transactionHash: dummyTxHash,
-                    logs: [],
-                    blockNumber: 0,
-                    confirmations: 0,
-                    cumulativeGasUsed:BigNumber.from(0),
-                    effectiveGasPrice: BigNumber.from(0),
-                    byzantium: false,
-                    type: 0,
-                    status: 0
-                } as ethers.providers.TransactionReceipt
-            }
-        });
+            {
+                hash: dummyTxHash, wait: (confirmations,) => {
+                    return {
+                        to: "dummyAddress",
+                        from: "dummyAddress",
+                        contractAddress: "dummyAddress",
+                        transactionIndex: 0,
+                        root: "",
+                        gasUsed: BigNumber.from(0),
+                        logsBloom: "dummyLogs",
+                        blockHash: "dummyBlockHash",
+                        transactionHash: dummyTxHash,
+                        logs: [],
+                        blockNumber: 0,
+                        confirmations: 0,
+                        cumulativeGasUsed: BigNumber.from(0),
+                        effectiveGasPrice: BigNumber.from(0),
+                        byzantium: false,
+                        type: 0,
+                        status: 0
+                    } as ethers.providers.TransactionReceipt
+                }
+            });
 
         // mock listenForExitTransaction method
         jest.spyOn(depositManager, "listenForExitTransaction").mockResolvedValue();
 
         const response = await depositManager.depositAndSwap(request, wallet);
-       
+
         console.log(response);
 
         expect(response?.hash).toEqual(dummyTxHash);
@@ -195,34 +196,35 @@ describe("deposit manager unit tests", () => {
 
         // mock _depositTokensToLPAndSwap method
         jest.spyOn(depositManager, "_depositTokensToLPAndSwap").mockResolvedValue(
-            { hash:dummyTxHash, wait: (confirmations, ) => { 
-                return {
-                    to: "dummyAddress",
-                    from: "dummyAddress",
-                    contractAddress: "dummyAddress",
-                    transactionIndex: 0,
-                    root: "",
-                    gasUsed: BigNumber.from(0),
-                    logsBloom: "dummyLogs",
-                    blockHash: "dummyBlockHash",
-                    transactionHash: dummyTxHash,
-                    logs: [],
-                    blockNumber: 0,
-                    confirmations: 0,
-                    cumulativeGasUsed:BigNumber.from(0),
-                    effectiveGasPrice: BigNumber.from(0),
-                    byzantium: false,
-                    type: 0,
-                    status: 0
-                } as ethers.providers.TransactionReceipt
-            }
-        });
+            {
+                hash: dummyTxHash, wait: (confirmations,) => {
+                    return {
+                        to: "dummyAddress",
+                        from: "dummyAddress",
+                        contractAddress: "dummyAddress",
+                        transactionIndex: 0,
+                        root: "",
+                        gasUsed: BigNumber.from(0),
+                        logsBloom: "dummyLogs",
+                        blockHash: "dummyBlockHash",
+                        transactionHash: dummyTxHash,
+                        logs: [],
+                        blockNumber: 0,
+                        confirmations: 0,
+                        cumulativeGasUsed: BigNumber.from(0),
+                        effectiveGasPrice: BigNumber.from(0),
+                        byzantium: false,
+                        type: 0,
+                        status: 0
+                    } as ethers.providers.TransactionReceipt
+                }
+            });
 
         // mock listenForExitTransaction method
         jest.spyOn(depositManager, "listenForExitTransaction").mockResolvedValue();
 
         const response = await depositManager.depositAndSwap(request, wallet);
-       
+
         console.log(response);
 
         expect(response?.hash).toEqual(dummyTxHash);
@@ -231,7 +233,7 @@ describe("deposit manager unit tests", () => {
     it("should fail if allowance is 0", async () => {
 
         const dummyRejectionMessage = {
-            "code": 150, 
+            "code": 150,
             "message": "Not enough allowance given to Liquidity Pool Manager contract"
         };
         const request: DepositAndSwapRequest = {
